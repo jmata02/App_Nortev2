@@ -64,6 +64,12 @@ grupo (sin acceso a NuGet); hay que validar `dotnet build` en la primera sesión
 **Pendiente:** Jurgen: `dotnet build`, migración `Inicial` y autenticación. Cada integrante:
 empezar su módulo con `/implementar-modulo`.
 
+**Actualización (mismo día):** el repositorio oficial pasa a ser `jmata02/App_Nortev2` (el de
+Carlos no permitía subir desde Claude). Se agregó `scripts/configurar-entorno.cmd`, que deja el
+entorno de Windows listo en un paso, y `.gitattributes` para que los `.cmd` mantengan saltos de
+línea CRLF. La configuración entró a `dev` sin Pull Request por pedido de Jurgen (coordinador),
+para que todos partan de ella.
+
 ### 2026-11-15 · Jurgen (con Claude) · Esqueleto · `main`
 
 **Pedido:** dividir el trabajo entre los cuatro integrantes y subir el esqueleto a GitHub.

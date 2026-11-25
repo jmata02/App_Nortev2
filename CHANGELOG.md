@@ -15,6 +15,7 @@ Registro de cambios por módulo. Agreguen su entrada arriba al cerrar cada Pull 
 ### Modificado
 - `Norte.Api.csproj`: `Microsoft.EntityFrameworkCore.Tools` en lugar de `...Design`, como dice el documento.
 - README y CONTRIBUTING: sección de Claude Code y de la bitácora.
+- `scripts/configurar-entorno.cmd`: configura el entorno de Windows en un paso.
 
 ## [2026-11-15] — Esqueleto inicial (todos)
 

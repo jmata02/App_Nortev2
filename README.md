@@ -66,6 +66,19 @@ Cuando empiecen su módulo, copien esa forma.
 - Docker Desktop
 - Herramienta de EF Core: `dotnet tool install --global dotnet-ef`
 
+### Opción rápida (Windows)
+
+Con Docker Desktop abierto, desde la raíz del repositorio:
+
+```cmd
+scripts\configurar-entorno.cmd
+```
+
+El script crea `.env` con una clave nueva, levanta PostgreSQL, guarda la cadena de conexión y la
+clave JWT en user-secrets, instala `dotnet-ef`, compila, aplica las migraciones e instala las
+dependencias de la web. Se puede correr varias veces. Si prefieren hacerlo a mano, estos son
+los pasos:
+
 ### 1. Base de datos
 
 ```bash
