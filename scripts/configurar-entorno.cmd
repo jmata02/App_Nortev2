@@ -19,7 +19,8 @@ echo [1/8] Verificando herramientas...
 call :verificar git "Git para Windows" || goto :error
 call :verificar dotnet "SDK de .NET 10 (https://dotnet.microsoft.com/download)" || goto :error
 call :verificar node "Node.js 26 LTS (https://nodejs.org)" || goto :error
-call :verificar docker "Docker Desktop (https://www.docker.com/products/docker-desktop)" || goto :error
+set "HAY_DOCKER=1"
+call :verificar docker "Docker Desktop (https://www.docker.com/products/docker-desktop). Sin Docker se compila todo, pero no se crea la base de datos." || set "HAY_DOCKER=0"
 for /f "delims=" %%v in ('dotnet --version') do echo       .NET SDK %%v
 for /f "delims=" %%v in ('node --version') do echo       Node %%v
 
@@ -42,9 +43,14 @@ for /f "usebackq tokens=1,* delims==" %%a in (".env") do (
 )
 
 echo [3/8] Levantando PostgreSQL con Docker...
+if "!HAY_DOCKER!"=="0" (
+  echo       Se omite: Docker Desktop no esta instalado.
+  goto :secretos
+)
 docker info >nul 2>&1 || (echo       Docker Desktop no esta abierto. Abralo, espere a que diga "Running" y vuelva a correr este script. & goto :error)
 docker compose up -d || goto :error
 
+:secretos
 echo [4/8] Secretos del API (user-secrets)...
 dotnet user-secrets set "ConnectionStrings:Norte" "Host=localhost;Port=5432;Database=!NOMBRE_BD!;Username=!USUARIO_BD!;Password=!CLAVE_BD!" --project %API% >nul || goto :error
 dotnet user-secrets list --project %API% | findstr /b /c:"Jwt:Clave" >nul
@@ -73,6 +79,10 @@ if not exist "%DA%\Migrations" (
   )
   echo       Generando la migracion Inicial...
   dotnet ef migrations add Inicial --project %DA% --startup-project %API% || goto :error
+)
+if "!HAY_DOCKER!"=="0" (
+  echo       Se omite crear las tablas: falta Docker Desktop. Instalelo y vuelva a correr el script.
+  goto :web
 )
 echo       Esperando a que PostgreSQL acepte conexiones...
 set /a INTENTOS=0
@@ -108,9 +118,11 @@ exit /b 1
 :error
 echo.
 echo *** La configuracion se detuvo en el paso anterior. Revise el mensaje de error. ***
+pause
 endlocal
 exit /b 1
 
 :fin
+pause
 endlocal
 exit /b 0
