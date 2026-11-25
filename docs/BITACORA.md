@@ -70,6 +70,17 @@ entorno de Windows listo en un paso, y `.gitattributes` para que los `.cmd` mant
 línea CRLF. La configuración entró a `dev` sin Pull Request por pedido de Jurgen (coordinador),
 para que todos partan de ella.
 
+**Verificación en la compu de Jurgen (Windows, .NET SDK 10.0.400, Node 24):** el script compiló
+la solución por primera vez con NuGet y encontró un error real: `CS8506` en
+`ExcepcionesFiltro.cs` (el `switch` no tenía un tipo común); se corrigió declarando
+`IActionResult?`. Después compiló sin errores, se generó la migración **`Inicial`**
+(`src/Norte.DA/Migrations`, con `numeric(18,2)` y `xmin`) y se instalaron las dependencias de
+la web. Se agregó `dotnet test` al script.
+
+**Pendiente:** instalar Docker Desktop en la compu de Jurgen y volver a correr el script para
+crear las tablas (`dotnet ef database update`). Node 24 funciona, pero el documento recomienda
+Node 26 LTS (`.nvmrc`).
+
 ### 2026-11-15 · Jurgen (con Claude) · Esqueleto · `main`
 
 **Pedido:** dividir el trabajo entre los cuatro integrantes y subir el esqueleto a GitHub.
