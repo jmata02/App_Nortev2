@@ -12,7 +12,7 @@ public class ExcepcionesFiltro : IExceptionFilter
 {
     public void OnException(ExceptionContext contexto)
     {
-        var resultado = contexto.Exception switch
+        IActionResult? resultado = contexto.Exception switch
         {
             RecursoNoEncontradoException e => new ObjectResult(Cuerpo(e)) { StatusCode = StatusCodes.Status404NotFound },
             ReglaNegocioException e => new ObjectResult(Cuerpo(e)) { StatusCode = StatusCodes.Status400BadRequest },
