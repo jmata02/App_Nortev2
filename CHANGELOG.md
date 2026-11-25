@@ -2,6 +2,20 @@
 
 Registro de cambios por módulo. Agreguen su entrada arriba al cerrar cada Pull Request.
 
+## [2026-11-24] — Configuración de Claude Code (Jurgen)
+
+### Agregado
+- `CLAUDE.md` como contrato del repositorio, apegado al documento del Avance 1.
+- `docs/proyecto/`: resumen del enunciado, resumen de la propuesta y PDF del Avance 1.
+- `docs/BITACORA.md`: registro obligatorio de cada sesión de trabajo.
+- `.claude/agents/` (planificador, backend, frontend, pruebas, revisor), `.claude/skills/`
+  (implementar-modulo, registrar-bitacora, evidencia-paradigma, preparar-entrega) y
+  `.claude/hooks/` + `.claude/settings.json`.
+
+### Modificado
+- `Norte.Api.csproj`: `Microsoft.EntityFrameworkCore.Tools` en lugar de `...Design`, como dice el documento.
+- README y CONTRIBUTING: sección de Claude Code y de la bitácora.
+
 ## [2026-11-15] — Esqueleto inicial (todos)
 
 ### Agregado

@@ -110,6 +110,31 @@ npm run dev                   # http://localhost:5173
 dotnet test
 ```
 
+## Trabajar con Claude Code
+
+El repositorio ya trae la configuración para que Claude Code trabaje apegado al documento del
+Avance 1:
+
+| Archivo | Para qué sirve |
+|---------|----------------|
+| `CLAUDE.md` | Contrato: reglas, paradigmas, responsables, capas y comandos. Claude lo lee siempre. |
+| `docs/proyecto/` | Resumen del enunciado, resumen de la propuesta y el PDF del Avance 1. |
+| `docs/BITACORA.md` | Registro de cada sesión de trabajo (quién, qué, decisiones, desvíos, pendientes). |
+| `.claude/agents/` | Agentes: `planificador`, `backend`, `frontend`, `pruebas` y `revisor`. |
+| `.claude/skills/` | Comandos: `/implementar-modulo`, `/registrar-bitacora`, `/evidencia-paradigma`, `/preparar-entrega`. |
+| `.claude/hooks/` | Revisiones automáticas: contexto al iniciar, bloqueo de push a `main`/`dev`, aviso antes de migraciones y bitácora obligatoria al terminar y al hacer commit. |
+
+Para empezar, cada integrante abre Claude Code en la carpeta del repositorio, en la rama de su
+módulo, y escribe por ejemplo:
+
+```
+/implementar-modulo movimientos registrar y listar gastos
+```
+
+Requisitos: Node.js instalado (los hooks están en Node) y, en Windows, Git para Windows
+(Claude Code usa Git Bash). Configuren su nombre en git (`git config --global user.name`)
+porque la bitácora y los hooks lo usan para saber quién está trabajando.
+
 ## Cómo trabajamos
 
 Ver [CONTRIBUTING.md](CONTRIBUTING.md): ramas por módulo, Pull Requests revisados por otra
