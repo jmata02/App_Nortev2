@@ -3,28 +3,27 @@ rem ============================================================================
 rem  Norte - configuracion del entorno de desarrollo (Windows)
 rem  Uso: doble clic o, desde la raiz del repo, scripts\configurar-entorno.cmd
 rem  Se puede correr varias veces: lo que ya esta listo no se vuelve a hacer.
+rem
+rem  Todo corre dentro de Docker (PostgreSQL, API, migraciones, pruebas y web).
+rem  Asi Smart App Control de Windows 11 no bloquea las DLL recien compiladas y
+rem  nadie tiene que desactivarlo. Solo se necesitan Git y Docker Desktop.
 rem ============================================================================
 setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0.."
-set "PATH=%PATH%;%USERPROFILE%\.dotnet\tools"
-set "API=src\Norte.Api"
-set "DA=src\Norte.DA"
+set "DA=src/Norte.DA"
+set "API=src/Norte.Api"
 
 echo.
-echo === Norte: configuracion del entorno ===
+echo === Norte: configuracion del entorno (Docker) ===
 echo Carpeta: %CD%
 echo.
 
-echo [1/8] Verificando herramientas...
+echo [1/6] Verificando herramientas...
 call :verificar git "Git para Windows" || goto :error
-call :verificar dotnet "SDK de .NET 10 (https://dotnet.microsoft.com/download)" || goto :error
-call :verificar node "Node.js 26 LTS (https://nodejs.org)" || goto :error
-set "HAY_DOCKER=1"
-call :verificar docker "Docker Desktop (https://www.docker.com/products/docker-desktop). Sin Docker se compila todo, pero no se crea la base de datos." || set "HAY_DOCKER=0"
-for /f "delims=" %%v in ('dotnet --version') do echo       .NET SDK %%v
-for /f "delims=" %%v in ('node --version') do echo       Node %%v
+call :verificar docker "Docker Desktop (https://www.docker.com/products/docker-desktop)" || goto :error
+docker info >nul 2>&1 || (echo       Docker Desktop no esta abierto. Abralo, espere a que diga "Running" y vuelva a correr este script. & goto :error)
 
-echo [2/8] Archivo .env de la base de datos...
+echo [2/6] Archivo .env (claves de la base y del JWT)...
 if not exist .env (
   for /f %%i in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "CLAVE_NUEVA=%%i"
   > .env (
@@ -36,39 +35,17 @@ if not exist .env (
 ) else (
   echo       .env ya existe, se reutiliza.
 )
-for /f "usebackq tokens=1,* delims==" %%a in (".env") do (
-  if "%%a"=="POSTGRES_DB" set "NOMBRE_BD=%%b"
-  if "%%a"=="POSTGRES_USER" set "USUARIO_BD=%%b"
-  if "%%a"=="POSTGRES_PASSWORD" set "CLAVE_BD=%%b"
-)
-
-echo [3/8] Levantando PostgreSQL con Docker...
-if "!HAY_DOCKER!"=="0" (
-  echo       Se omite: Docker Desktop no esta instalado.
-  goto :secretos
-)
-docker info >nul 2>&1 || (echo       Docker Desktop no esta abierto. Abralo, espere a que diga "Running" y vuelva a correr este script. & goto :error)
-docker compose up -d || goto :error
-
-:secretos
-echo [4/8] Secretos del API (user-secrets)...
-dotnet user-secrets set "ConnectionStrings:Norte" "Host=localhost;Port=5432;Database=!NOMBRE_BD!;Username=!USUARIO_BD!;Password=!CLAVE_BD!" --project %API% >nul || goto :error
-dotnet user-secrets list --project %API% | findstr /b /c:"Jwt:Clave" >nul
+findstr /b /c:"JWT_CLAVE=" .env >nul
 if errorlevel 1 (
   for /f %%i in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N')"') do set "CLAVE_JWT=%%i"
-  dotnet user-secrets set "Jwt:Clave" "!CLAVE_JWT!" --project %API% >nul || goto :error
-  echo       Clave JWT creada.
+  >> .env echo JWT_CLAVE=!CLAVE_JWT!
+  echo       Clave JWT agregada a .env.
 )
-echo       Cadena de conexion y clave JWT listas.
 
-echo [5/8] Herramienta de EF Core (dotnet-ef 10)...
-dotnet tool update --global dotnet-ef --version "10.*" >nul || goto :error
+echo [3/6] Levantando PostgreSQL...
+docker compose up -d --wait postgres || goto :error
 
-echo [6/8] Compilando la solucion y corriendo las pruebas...
-dotnet build Norte.slnx -nologo -v q || goto :error
-dotnet test Norte.slnx --no-build -nologo -v q || goto :error
-
-echo [7/8] Base de datos...
+echo [4/6] Migraciones (la primera vez descarga el SDK de .NET 10, tarda unos minutos)...
 if not exist "%DA%\Migrations" (
   set "INTEGRANTE=sin-nombre"
   for /f "delims=" %%n in ('git config user.name') do set "INTEGRANTE=%%n"
@@ -76,38 +53,28 @@ if not exist "%DA%\Migrations" (
   if /i "!INTEGRANTE:Jurgen=!"=="!INTEGRANTE!" (
     echo       Todavia no existe la migracion inicial. La genera Jurgen ^(riesgo 5^).
     echo       Haga git pull de dev cuando el la suba y vuelva a correr este script.
-    goto :web
+    goto :pruebas
   )
   echo       Generando la migracion Inicial...
-  dotnet ef migrations add Inicial --project %DA% --startup-project %API% || goto :error
+  docker compose run --rm migraciones migrations add Inicial --project %DA% --startup-project %API% || goto :error
 )
-if "!HAY_DOCKER!"=="0" (
-  echo       Se omite crear las tablas: falta Docker Desktop. Instalelo y vuelva a correr el script.
-  goto :web
-)
-echo       Esperando a que PostgreSQL acepte conexiones...
-set /a INTENTOS=0
-:esperar_bd
-docker exec norte-postgres pg_isready -U !USUARIO_BD! >nul 2>&1 && goto :bd_lista
-set /a INTENTOS+=1
-if !INTENTOS! geq 30 (echo       PostgreSQL no respondio a tiempo. & goto :error)
-timeout /t 2 /nobreak >nul
-goto :esperar_bd
-:bd_lista
-dotnet ef database update --project %DA% --startup-project %API% || goto :error
+docker compose run --rm migraciones || goto :error
 
-:web
-echo [8/8] Dependencias de la web...
-pushd web\norte-web
-if not exist .env.local copy .env.example .env.local >nul
-call npm install --no-fund --no-audit || (popd & goto :error)
-popd
+:pruebas
+echo [5/6] Corriendo las pruebas...
+docker compose run --rm pruebas || goto :error
+
+echo [6/6] Levantando el API y la web...
+docker compose up -d || goto :error
 
 echo.
 echo === Listo ===
-echo  API:  dotnet run --project src\Norte.Api --launch-profile http
-echo        Swagger en http://localhost:5147/swagger  (pruebe GET /api/categorias)
-echo  Web:  cd web\norte-web  y  npm run dev   (http://localhost:5173)
+echo  API:  http://localhost:5147/swagger   (pruebe GET /api/categorias)
+echo  Web:  http://localhost:5173
+echo.
+echo  Despues de cambiar codigo C#:   docker compose restart api
+echo  Ver errores del API:            docker compose logs -f api
+echo  Apagar todo:                    docker compose down
 echo.
 goto :fin
 

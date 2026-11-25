@@ -34,6 +34,52 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-24 · Jurgen (con Claude) · Entorno de desarrollo en Docker · `chore/entorno-docker`
+
+**Pedido:** que todo el proyecto corra dentro de Docker para que ningún integrante tenga que
+desactivar Smart App Control de Windows 11.
+
+**Hecho:**
+- `docker-compose.yml`: además de `postgres` (ahora con healthcheck), servicios `api`
+  (SDK de .NET 10, `dotnet run` en http://localhost:5147), `migraciones` (`dotnet ef`),
+  `pruebas` (`dotnet test`) y `web` (Node 26, Vite en http://localhost:5173). La cadena de
+  conexión y la clave JWT llegan por variables de entorno desde `.env`.
+- `Directory.Build.props`: dentro de Docker, `bin/` y `obj/` van a un volumen aparte y se
+  ignoran los de Windows, para que no choquen con Visual Studio.
+- `.config/dotnet-tools.json`: fija `dotnet-ef` 10.0.15 como herramienta local.
+- `.env.example`: nueva variable `JWT_CLAVE`.
+- `web/norte-web/vite.config.js`: en Docker escucha en `0.0.0.0` y revisa cambios por sondeo.
+- `scripts/configurar-entorno.cmd`: ahora solo necesita Git y Docker Desktop; levanta todo,
+  aplica migraciones y corre las pruebas en contenedores.
+- `.claude/hooks/guardia-bash.mjs`: el aviso de migraciones también reconoce la forma con Docker.
+- README: puesta en marcha con Docker.
+- **Se aplicó la migración `Inicial`**: 9 tablas creadas y 11 categorías de semilla.
+
+**Paradigma evidenciado:** ninguno (infraestructura).
+
+**Decisiones:** correr API, migraciones, pruebas y web en contenedores en lugar de pedir que
+desactiven Smart App Control (al desactivarlo puede que no se pueda volver a activar). Las
+variables de entorno reemplazan a user-secrets dentro de Docker; los secretos siguen fuera del
+repositorio, en `.env`.
+
+**Desvíos del documento:** ninguno. El documento ya usa Docker Compose para el desarrollo
+(riesgo 9); ahora también corre el API y la web. El stack y las versiones no cambian.
+
+**Problemas encontrados:** Smart App Control bloqueaba `Norte.DA.dll` ("An Application Control
+policy has blocked this file"), así que no se podían aplicar migraciones ni correr el API, y
+también bloqueaba el binario nativo de oxlint (`npm run lint`). En el contenedor:
+`dotnet ef` no restaura paquetes por sí mismo (se compila antes) y los `obj/` de Windows se
+compilaban dos veces (CS0579), por eso se excluyen.
+
+**Verificación:** `docker compose run --rm migraciones` ✔ · `GET /api/categorias` devuelve las
+11 categorías ✔ · Swagger 200 ✔ · `docker compose run --rm pruebas` 7/7 ✔ ·
+`npm run lint` y `npm run build` en el contenedor ✔ · `dotnet build` en Windows sigue sin
+errores ✔ · `scripts\configurar-entorno.cmd` completo ✔.
+
+**Pendiente:** push de `chore/entorno-docker` y PR hacia `dev` (revisado por otra persona).
+Avisar al grupo que corran de nuevo `scripts\configurar-entorno.cmd` y agreguen `JWT_CLAVE`
+a su `.env` (el script lo hace solo). Después, módulo de Autenticación.
+
 ### 2026-11-24 · Jurgen (con Claude) · Configuración del repositorio · `chore/configuracion-claude-code`
 
 **Pedido:** preparar el repositorio para trabajar con Claude Code apegado al documento del
