@@ -34,6 +34,32 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-26 · Jurgen (con Claude) · Verificación de `dev` tras el PR #1 · `chore/changelog-pr1`
+
+**Pedido:** verificar que `dev` quedara sin errores después de hacer merge del PR #1.
+
+**Hecho:**
+- Verificación de `dev` (`87f5421`): `dotnet build` sin errores ni advertencias, 30/30 pruebas,
+  sin cambios de modelo pendientes, migraciones al día, lint y build de la web limpios, API y
+  web respondiendo en Docker, sin archivos de `bin/`, `obj/`, `dist/`, `node_modules/` ni `.env`
+  en el repositorio.
+- `CHANGELOG.md`: entrada del PR #1.
+- `docker-compose.yml`: la web pasa `--host 0.0.0.0` también en el comando.
+
+**Paradigma evidenciado:** ninguno (verificación y documentación).
+
+**Decisiones:** ninguna nueva.
+
+**Desvíos del documento:** ninguno.
+
+**Problemas encontrados:** al cambiar de rama, Vite se reinició solo mientras git reescribía los
+archivos y quedó escuchando solo dentro del contenedor (la web dejó de abrir en Windows). Se
+resolvió reiniciando el contenedor y, para que no se repita, el `--host` va también en el comando.
+
+**Pendiente:** PR de esta rama hacia `dev`. Borrar las ramas ya integradas
+(`chore/configuracion-claude-code`, `chore/entorno-docker`, `feature/modulo-autenticacion`).
+Proteger `main` y `dev` en GitHub (PR obligatorio). Siguiente módulo de Jurgen: Reportes.
+
 ### 2026-11-26 · Jurgen (con Claude) · Web: tema "Norte neón" y acceso · `feature/modulo-autenticacion`
 
 **Pedido:** el profe dijo que el prototipo se veía muy plano. El grupo aprobó un tema nuevo
