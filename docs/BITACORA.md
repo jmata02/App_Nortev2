@@ -34,6 +34,61 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-26 · Jurgen (con Claude) · Dashboard y reportes · `feature/modulo-reportes`
+
+**Pedido:** backend de reportes con reglas puras (paradigma funcional) y conectar el Dashboard.
+
+**Hecho:**
+- `Modelo/Reportes/`: `PeriodoMensual` (record inmutable que valida año y mes),
+  `TotalesFinancieros`, `ResumenFinancieroDto`, `GastoPorCategoriaDto` y `TendenciaMensualDto`.
+- `Norte.Reglas/ReglaResumenFinanciero.cs`: `CalcularTotales` (`Where` + `Aggregate`),
+  `CalcularGastoPorCategoria` (`Where` + `GroupBy` + `Select`), `CalcularTendencia` y
+  `CalcularVariacionPorcentual`, con porcentajes de 2 decimales y redondeo `AwayFromZero`.
+- `Norte.DA/ReporteDA.cs` con `IDbContextFactory` (un contexto por consulta) y
+  `Norte.Flujo/ReporteFlujo.cs`, que pide las consultas en paralelo con `Task.WhenAll` y recibe
+  la fecha con `TimeProvider`.
+- `ReportesController` con `[Authorize]`: `GET /api/reportes/resumen`, `/gasto-por-categoria` y
+  `/tendencia` (400 si el periodo o los meses no son válidos). `ModuloReportes` registra todo.
+- 28 pruebas nuevas (58 en total): totales, redondeo, que la entrada no cambie, gasto por
+  categoría, tendencia con meses vacíos y cambio de año, y el Flujo con un reloj fijo.
+- Web: `api/reportesApi.js`. El Dashboard trae resumen, gasto por categoría y tendencia del API
+  real, con estados de carga, error ("Reintentar") y vacío, y se recarga solo cuando llega un
+  cambio por `cambiosFinancieros$`. Metas, alerta y últimos movimientos siguen de ejemplo.
+- `docs/EVIDENCIA_PARADIGMAS.md`: sección del paradigma funcional con fragmento y defensa.
+
+**Paradigma evidenciado:** funcional en `Norte.Reglas/ReglaResumenFinanciero.cs`
+(`CalcularTotales`, `CalcularGastoPorCategoria`, `CalcularTendencia`). Además, concurrente de
+apoyo (`Task.WhenAll` + `IDbContextFactory` en `ReporteFlujo`/`ReporteDA`) y la suscripción
+reactiva del Dashboard a `cambiosFinancieros$`.
+
+**Decisiones:** "deudas activas" = `MontoPendiente > 0` y "metas en curso" = `FechaLimite >= hoy`,
+contando las tablas sin tocar el código de Carlos y Jessica (confirmar con ellos). Sin año y mes
+se usa el mes actual en UTC. La variación es `null` si el balance anterior fue 0.
+
+**Desvíos del documento:** ninguno.
+
+**Problemas encontrados:** se había usado `.Result` después de `Task.WhenAll`; se cambió por
+`await` para cumplir CLAUDE.md. No requiere migración.
+
+**Verificación:** `dotnet build` sin errores ni advertencias · 52/52 pruebas · lint y build de la
+web limpios · contra la base real con transacciones de prueba locales: resumen 200 (variación
++149,03 %), gasto por categoría ordenado con porcentajes, tendencia con un mes vacío en 0,
+periodo inválido 400 y sin token 401 · en el navegador el Dashboard muestra los datos reales y
+al publicar en `cambiosFinancieros$` vuelve a pedir los tres reportes.
+
+**Revisión (agente `revisor`) y correcciones:** sin bloqueantes de código. Se agregaron
+pruebas de `PeriodoMensual` (año bisiesto, cambio de año, inmutabilidad, rangos), una prueba de
+que el Flujo pasa el usuario y el "hoy" del reloj a los conteos, y `CalcularGastoPorCategoria` a
+la prueba de que la entrada no cambia (58 pruebas en total). La suscripción del Dashboard usa
+`debounceTime(300)` para juntar ráfagas de cambios. Swagger documenta el 401. La etiqueta del
+saldo dice "Balance de {mes} (ingresos menos gastos)".
+
+**Pendiente:** commit y PR. No requiere migración. Con Jessica: "metas en curso" hoy también
+cuenta metas ya cumplidas; cuando `MetaAhorro` tenga sus aportes calculados, agregar
+`suma de aportes < MontoObjetivo`. Con Carlos: confirmar que `MontoPendiente` se actualiza en
+cada pago. Con Mauricio: avisar que el Dashboard ya está suscrito a `cambiosFinancieros$`.
+Cuando Jessica tenga `movimientosApi`, que publique en `cambiosFinancieros$` al guardar.
+
 ### 2026-11-26 · Jurgen (con Claude) · Verificación de `dev` tras el PR #1 · `chore/changelog-pr1`
 
 **Pedido:** verificar que `dev` quedara sin errores después de hacer merge del PR #1.
