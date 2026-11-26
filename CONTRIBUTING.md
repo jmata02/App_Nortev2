@@ -56,6 +56,11 @@ Deudas: tarea en segundo plano de pagos recurrentes
 - Lo revisa **otra persona del grupo** antes de hacer merge (así todos conocen el código
   de los demás para la defensa).
 - Llenen la plantilla del PR, sobre todo el paradigma que evidencia y dónde está.
+- **Antes del merge**, quien revisa corre en Claude Code `/verificar-integracion <rama>`.
+  El agente `verificador-integracion` revisa commits, autores, secretos, archivos que no
+  deben subirse, conflictos, bitácora, migraciones y reglas, y corre compilación, pruebas y
+  lint. Solo se hace merge con veredicto **LISTO** (o **CON OBSERVACIONES** ya conversadas).
+- Para pasar `dev` a `main` en una entrega: `/verificar-integracion main`.
 
 ## Migraciones de base de datos (riesgo 5)
 

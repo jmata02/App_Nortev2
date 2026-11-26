@@ -34,6 +34,71 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-26 · Jurgen (con Claude) · Agente verificador de integración · `chore/agente-verificador`
+
+**Pedido:** un agente que revise absolutamente todo lo que entra a `main` y a `dev` para no
+tener problemas.
+
+**Hecho:**
+- `.claude/agents/verificador-integracion.md`: revisa el historial (commits directos, rama al
+  día, conflictos con `git merge-tree`, mensajes y autores), archivos prohibidos y secretos,
+  bitácora, changelog, migraciones (solo Jurgen), cambios de stack, `Program.cs`, dueños de
+  módulos y reglas de código; corre compilación, pruebas, migraciones pendientes, lint y build
+  de la web; para `main` agrega lo de una entrega. Da un veredicto LISTO / CON OBSERVACIONES /
+  NO LISTO. No modifica nada ni cambia de rama.
+- `.claude/skills/verificar-integracion/SKILL.md`: comando `/verificar-integracion [rama|dev|main]`.
+- `CLAUDE.md` (tabla de agentes y skills) y `CONTRIBUTING.md` (verificar antes de cada merge).
+
+**Paradigma evidenciado:** ninguno (proceso del repositorio).
+
+**Decisiones:** el agente no cambia de rama: si la rama a verificar no está en la carpeta, solo
+hace las revisiones estáticas y lo dice. No se agregó integración continua en GitHub (Actions):
+sería otra herramienta fuera del documento; queda como idea a conversar con el grupo.
+
+**Desvíos del documento:** ninguno.
+
+**Problemas encontrados:** al probar el agente sobre `dev`, encontró que el PR #3
+(`chore/administracion`) se hizo merge en **`main` en vez de `dev`**: `main` quedó con 2 commits
+que `dev` no tiene (CHANGELOG del PR #2 y la sección de la demo). Esta rama sale de
+`chore/administracion`, así que su PR hacia `dev` trae ese contenido y las dos ramas quedan
+iguales. Se agregó al agente una revisión fija de "`main` adelante de `dev`" y de la base del PR.
+El agente también señaló, como ya estaba registrado, que los 5 commits de la configuración
+inicial tienen autor "Claude" (incluida la migración `Inicial`, generada en la compu de Jurgen);
+no se reescribe la historia de `dev`.
+
+**Pendiente:** PR de esta rama **con base `dev`**. Probar el agente con el primer PR de un
+compañero (en una sesión nueva de Claude Code ya aparece como `verificador-integracion`).
+
+### 2026-11-26 · Jurgen (con Claude) · Coordinación · `chore/administracion`
+
+**Pedido:** confirmar que `dev` quedó bien después del PR #2 y avanzar con las tareas de
+administración.
+
+**Hecho:**
+- Verificación de `dev` (`5351e32`): PR #1 y #2 integrados, `dotnet build` sin errores ni
+  advertencias, 58/58 pruebas, sin cambios de modelo pendientes, lint y build de la web limpios,
+  API (categorías, inicio de sesión, reportes, 401 sin token) y web funcionando en Docker. Las
+  5 ramas de trabajo no tienen commits fuera de `dev`.
+- `CHANGELOG.md`: entrada del PR #2 (el commit del changelog del PR #1 entró dentro de ese PR).
+- README: sección "Demostración y defensa" con el procedimiento del día anterior y del día de
+  la defensa. Tarea de riesgo 10 marcada en `DIVISION_TRABAJO.md`.
+
+**Paradigma evidenciado:** ninguno (coordinación).
+
+**Decisiones:** **riesgo 10 resuelto**: la demostración se hace con ejecución local en Docker en
+la compu de Jurgen, con una segunda compu de respaldo; no se usa servidor en internet. Es la
+opción de respaldo que ya traía la propuesta; se menciona en el Avance 2 como ajuste.
+
+**Desvíos del documento:** ninguno (la propuesta dejaba el despliegue "pendiente de definir"
+con la ejecución local como respaldo).
+
+**Problemas encontrados:** ninguno. No está probado correr la demo sin internet (NuGet con
+versiones `10.0.*` y Google Fonts); el README lo advierte.
+
+**Pendiente:** proteger `main` y `dev` en GitHub (lo hace Jurgen desde Settings). Confirmar la
+decisión de la demo con el grupo y elegir la compu de respaldo. Borrar las ramas integradas
+cuando Jurgen lo decida. Preparar el Avance 2.
+
 ### 2026-11-26 · Jurgen (con Claude) · Dashboard y reportes · `feature/modulo-reportes`
 
 **Pedido:** backend de reportes con reglas puras (paradigma funcional) y conectar el Dashboard.
