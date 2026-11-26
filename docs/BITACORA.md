@@ -5,6 +5,110 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 ("problemas encontrados" y "ajustes desde el primer avance") y la defensa.
 
 - La entrada más reciente va **arriba**, justo debajo de la línea `<!-- ENTRADAS -->`.
+- Una entrada por sesión. Si la sesión sigue el mismo día en el mismo módulo, se amplía la misma.
+- Claude Code la actualiza antes de terminar y antes de cada commit (los hooks lo verifican).
+- `CHANGELOG.md` es otra cosa: resume cada Pull Request.
+
+## Formato
+
+```markdown
+### AAAA-MM-DD · <Integrante> · <Módulo> · `<rama>`
+
+**Pedido:** qué se pidió en la sesión, en una o dos líneas.
+
+**Hecho:**
+- cambio concreto (archivo o componente y para qué sirve)
+
+**Paradigma evidenciado:** cuál, en qué archivo y método (o "ninguno").
+
+**Decisiones:** decisiones técnicas tomadas y por qué.
+
+**Desvíos del documento:** diferencias con `docs/proyecto/PROPUESTA_AVANCE1.md` (o "ninguno").
+
+**Problemas encontrados:** errores, bloqueos y cómo se resolvieron (o "ninguno").
+
+**Pendiente:** lo que queda para la próxima sesión. Incluir "requiere migración" si aplica.
+```
+
+---
+
+<!-- ENTRADAS -->
+
+### 2026-11-26 · Jurgen (con Claude) · Web: tema "Norte neón" y acceso · `feature/modulo-autenticacion`
+
+**Pedido:** el profe dijo que el prototipo se veía muy plano. El grupo aprobó un tema nuevo
+(nocturno, neón, inspirado en la estética de ciudad costera de los videojuegos, sin usar marcas
+ni recursos de ningún juego) y pidió pasarlo al proyecto igual al prototipo aprobado, con la
+parte web de Autenticación funcional. A los otros módulos solo se les pone el diseño.
+
+**Hecho:**
+- Prototipo visual aprobado por el grupo (artefacto "Norte Neón"), con la palmera como logo.
+- `estilos/tokens.css` y `estilos/global.css`: paleta con significado (magenta = marca,
+  cian = ingreso / al día, coral = gasto / excedido, ámbar = pendiente), fuentes Unbounded,
+  Manrope y JetBrains Mono, fondo de atardecer con grano, paneles de vidrio, chips, barras que se
+  llenan, anillo, filtros, campos y la entrada escalonada. Respeta "reducir movimiento".
+- Componentes compartidos en `componentes/`: `FondoNeon`, `Logo` (palmera), `Panel`
+  (inclinación 3D y luz que sigue al mouse), `CifraAnimada`, `MiniGrafica`,
+  `Indicadores` (`Chip`, `BarraProgreso`, `Anillo`), `Icono`, `FilaMovimiento`,
+  `AvisoVistaPrevia`, `RutaProtegida`, `graficas.js` (Chart.js con brillo neón) y el
+  `Layout` nuevo (menú de vidrio, usuario y botón Salir).
+- `api/clienteHttp.js`: `guardarSesion`, `obtenerUsuario`, `cerrarSesion`, `haySesion`
+  (revisa el vencimiento). Un 401 con token borra la sesión y manda a `/iniciar-sesion`.
+  Muestra los mensajes de validación del API.
+- Autenticación (web): `PantallaAcceso` con pestañas para `/iniciar-sesion` y `/registro`,
+  conectada a `api/autenticacionApi.js`. Rutas internas protegidas.
+- Dashboard (Jurgen) con el diseño completo y datos de ejemplo en `dashboard/datosEjemplo.js`,
+  con la forma que tendrán las respuestas de `/api/reportes`.
+- Movimientos, Metas (Jessica), Deudas (Carlos) y Presupuestos (Mauricio): **solo diseño**,
+  con datos de ejemplo marcados con `AvisoVistaPrevia` y un `TODO` para el responsable. Los
+  porcentajes y estados vienen como datos (no se calculan en la web). Categorías con el estilo nuevo.
+- `public/favicon.svg` con la palmera. Se borró `EnConstruccion.jsx` (ya no se usa).
+
+**Paradigma evidenciado:** orientado a eventos en `PantallaAcceso.jsx` (`manejarCambio`,
+`manejarEnvio`) y `Layout.jsx` (`manejarCerrarSesion`).
+
+**Decisiones:** todo en CSS y JavaScript puro, sin librerías nuevas. Las pantallas de otros
+módulos usan datos de ejemplo dentro de su propia página para que cada responsable los cambie
+por su API sin tocar el diseño. La lógica de su paradigma (formularios de Jessica, concurrencia de
+Carlos, flujo reactivo de Mauricio) queda para cada responsable, con autorización de Jurgen.
+
+**Desvíos del documento:** ninguno en alcance ni stack. Cambia el diseño visual respecto al
+prototipo presentado en el Avance 1 (decisión del grupo, para mencionarla en el Avance 2).
+
+**Problemas encontrados:** el lint marcó dos advertencias de React: `new Date()` dentro del
+render del Dashboard (se pasó a `useState(() => new Date())`) y un `setState` dentro del efecto
+de `CifraAnimada` (ahora, con "reducir movimiento", se muestra el valor directo sin efecto).
+
+**Verificación:** `npm run build` ✔ · `npm run lint` en Docker sin advertencias ✔. En el
+navegador contra el API real: `/dashboard` sin sesión redirige a `/iniciar-sesion` ✔ · la
+contraseña débil se rechaza antes de enviar ✔ · el registro crea la cuenta y entra al Dashboard ✔
+· "Salir" borra la sesión ✔ · contraseña mala muestra "Correo o contraseña incorrectos." ✔ ·
+inicio de sesión con el correo en mayúsculas entra ✔ · Dashboard y Presupuestos se ven como el
+prototipo en escritorio y en celular, sin errores en la consola ✔. No se probó el 401 con token
+vencido porque todavía no hay endpoints con `[Authorize]`.
+
+**Revisión (agente `revisor`) y correcciones:**
+- Colores escritos a mano en JS/JSX: ahora salen de `tokens.css` (`var(--color-...)` en estilos
+  y `colorToken()` para Chart.js). `datosEjemplo.js` ya no trae colores. Excepción acordada y
+  anotada en `tokens.css`: los brillos y sombras de los CSS usan `rgba()` de los mismos colores.
+- Un inicio de sesión fallido con un token vencido recargaba la página y ocultaba el error:
+  `haySesion()` ahora borra la sesión vencida y registro / inicio de sesión no mandan token
+  (`conToken: false`). `guardarToken` dejó de exportarse.
+- Las formas de datos de ejemplo de Movimientos, Deudas, Presupuestos y Metas quedan marcadas
+  como **propuesta de contrato** a acordar con cada responsable (riesgo 8). Deudas usa montos
+  numéricos en vez de texto ya formateado.
+- Series del Dashboard movidas a `datosEjemplo.js`; aviso de vista previa unificado.
+- `Usuario.Crear` mide el nombre ya recortado (mínimo 2 letras) y tiene su prueba (30/30).
+- Las mini gráficas tenían huecos en la línea por la animación del trazo; ahora se revelan con
+  `clip-path`.
+- No se corrigió (anotado): `Usuario` tiene poco comportamiento propio; la evidencia fuerte de
+  OO será `Transaccion`, `Deuda`, `Presupuesto` y `MetaAhorro`. El tiempo de respuesta del inicio
+  de sesión puede revelar si un correo existe (fuera del alcance del curso).
+
+**Pendiente:** PR hacia `dev` y entrada en `CHANGELOG.md` al cerrarlo. En el PR, avisar los
+archivos compartidos tocados (`ExcepcionDominio.cs`, `ExcepcionesFiltro.cs`, `clienteHttp.js`,
+`tokens.css`, `global.css`, `Layout.*`) y las páginas de Jessica, Carlos y Mauricio, que tienen
+el diseño con datos de ejemplo.
 
 ### 2026-11-24 · Jurgen (con Claude) · Autenticación · `feature/modulo-autenticacion`
 
@@ -53,35 +157,6 @@ de Identity (`AQAAAAIAAY...`) y no hay tablas `AspNet*`.
 **Pendiente:** web (inicio de sesión, registro, rutas protegidas, cerrar sesión, 401 → salir),
 revisión con el agente `revisor`, commit y PR. Archivos compartidos tocados (avisar en el PR):
 `ExcepcionDominio.cs`, `ExcepcionesFiltro.cs`.
-
-- Una entrada por sesión. Si la sesión sigue el mismo día en el mismo módulo, se amplía la misma.
-- Claude Code la actualiza antes de terminar y antes de cada commit (los hooks lo verifican).
-- `CHANGELOG.md` es otra cosa: resume cada Pull Request.
-
-## Formato
-
-```markdown
-### AAAA-MM-DD · <Integrante> · <Módulo> · `<rama>`
-
-**Pedido:** qué se pidió en la sesión, en una o dos líneas.
-
-**Hecho:**
-- cambio concreto (archivo o componente y para qué sirve)
-
-**Paradigma evidenciado:** cuál, en qué archivo y método (o "ninguno").
-
-**Decisiones:** decisiones técnicas tomadas y por qué.
-
-**Desvíos del documento:** diferencias con `docs/proyecto/PROPUESTA_AVANCE1.md` (o "ninguno").
-
-**Problemas encontrados:** errores, bloqueos y cómo se resolvieron (o "ninguno").
-
-**Pendiente:** lo que queda para la próxima sesión. Incluir "requiere migración" si aplica.
-```
-
----
-
-<!-- ENTRADAS -->
 
 ### 2026-11-24 · Jurgen (con Claude) · Entorno de desarrollo en Docker · `chore/entorno-docker`
 
