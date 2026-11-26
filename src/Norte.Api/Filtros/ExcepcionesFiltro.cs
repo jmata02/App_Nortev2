@@ -12,11 +12,12 @@ public class ExcepcionesFiltro : IExceptionFilter
 {
     public void OnException(ExceptionContext contexto)
     {
-        var resultado = contexto.Exception switch
+        IActionResult? resultado = contexto.Exception switch
         {
             RecursoNoEncontradoException e => new ObjectResult(Cuerpo(e)) { StatusCode = StatusCodes.Status404NotFound },
             ReglaNegocioException e => new ObjectResult(Cuerpo(e)) { StatusCode = StatusCodes.Status400BadRequest },
             ConflictoException e => new ObjectResult(Cuerpo(e)) { StatusCode = StatusCodes.Status409Conflict },
+            CredencialesInvalidasException e => new ObjectResult(Cuerpo(e)) { StatusCode = StatusCodes.Status401Unauthorized },
             DbUpdateConcurrencyException => new ObjectResult(new { mensaje = "El registro cambió mientras se editaba. Recargue e intente de nuevo." })
             { StatusCode = StatusCodes.Status409Conflict },
             UnauthorizedAccessException => new UnauthorizedResult(),

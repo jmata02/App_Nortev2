@@ -1,0 +1,193 @@
+/* Pantalla de acceso: escena de atardecer a la izquierda y tarjeta de vidrio a la derecha. */
+
+.acceso {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+}
+
+/* ---------- Escena: sol con franjas sobre una cuadrícula que avanza ---------- */
+.escena {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem 2.5rem;
+}
+
+/* El sol ocupa su propio lugar en la columna, así nunca se encima con el título. */
+.sol {
+  --franjas: linear-gradient(180deg, #000 0 56%, transparent 56% 59%, #000 59% 67%, transparent 67% 71%, #000 71% 77%, transparent 77% 82%, #000 82% 87%, transparent 87% 93%, #000 93%);
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  flex-shrink: 0;
+  margin-block: 1.5rem;
+  width: min(24vw, 280px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--color-ambar) 0%, var(--color-coral) 40%, var(--color-magenta) 75%, var(--color-violeta) 100%);
+  -webkit-mask-image: var(--franjas);
+  mask-image: var(--franjas);
+  box-shadow: 0 0 120px 20px rgba(255, 46, 136, 0.35);
+}
+
+.horizonte {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 0;
+  height: 34%;
+  perspective: 300px;
+  overflow: hidden;
+}
+
+.horizonte::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -100% 0;
+  transform: rotateX(62deg);
+  transform-origin: top;
+  background-image:
+    linear-gradient(rgba(255, 46, 136, 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.5) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: avanzar 2.6s linear infinite;
+}
+
+.horizonte::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--color-fondo) 0%, transparent 35%);
+}
+
+@keyframes avanzar {
+  to {
+    background-position: 0 48px;
+  }
+}
+
+.lema {
+  position: relative;
+  z-index: 1;
+  max-width: 26rem;
+  text-shadow: 0 2px 18px rgba(10, 6, 18, 0.9);
+}
+
+.lema h1 {
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  margin-bottom: 0.8rem;
+  text-wrap: balance;
+}
+
+.lema h1 span {
+  background: linear-gradient(90deg, var(--color-ambar), var(--color-coral) 35%, var(--color-magenta) 70%, var(--color-violeta));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lema p {
+  color: var(--color-texto-suave);
+  max-width: 30ch;
+}
+
+/* ---------- Tarjeta del formulario ---------- */
+.panel-acceso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.tarjeta-acceso {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.2rem;
+  border-radius: 20px;
+  background: rgba(20, 11, 36, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--color-borde);
+  box-shadow: var(--sombra);
+  position: relative;
+  animation: entrar 0.7s var(--curva-suave) both;
+}
+
+/* Borde con degradado magenta → cian */
+.tarjeta-acceso::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(140deg, rgba(255, 46, 136, 0.7), transparent 35%, transparent 65%, rgba(34, 227, 208, 0.6));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0.001;
+    transform: translateY(18px) scale(0.98);
+  }
+}
+
+.pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--color-vidrio);
+  margin-bottom: 1.6rem;
+}
+
+.pestanas a {
+  padding: 0.6rem;
+  border-radius: 9px;
+  color: var(--color-texto-suave);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+}
+
+.pestanas a[aria-current='page'] {
+  background: linear-gradient(135deg, var(--color-magenta), var(--color-violeta));
+  color: #fff;
+  box-shadow: 0 6px 20px -6px var(--color-magenta);
+}
+
+@media (max-width: 820px) {
+  .acceso {
+    grid-template-columns: 1fr;
+  }
+
+  .escena {
+    padding: 1.5rem 16px;
+  }
+
+  .sol {
+    width: 130px;
+    margin-block: 1rem;
+  }
+
+  .panel-acceso {
+    padding: 1.5rem 16px 2.5rem;
+  }
+
+  .tarjeta-acceso {
+    padding: 1.6rem;
+  }
+}

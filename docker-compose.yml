@@ -1,5 +1,38 @@
-# Base de datos para desarrollo: todos usan la misma versión de PostgreSQL (riesgo 9).
-# Uso: copiar .env.example a .env y ejecutar `docker compose up -d`.
+# Entorno de desarrollo en Docker (riesgo 9: todos con las mismas versiones).
+# Uso: copiar .env.example a .env y ejecutar:
+#   docker compose up -d                   PostgreSQL + API (http://localhost:5147/swagger) + web (http://localhost:5173)
+#   docker compose run --rm migraciones    aplica las migraciones a la base
+#   docker compose run --rm pruebas        corre dotnet test
+#   docker compose run --rm web npm run lint
+#
+# Por qué el API y la web corren dentro de Docker: en Windows 11, Smart App Control bloquea
+# las DLL recién compiladas y algunos binarios nativos de node_modules (sin firma). Dentro del
+# contenedor todo corre en Linux y ese bloqueo no aplica, así que nadie tiene que desactivar
+# protecciones de su equipo.
+
+# Configuración común de los servicios .NET: SDK de .NET 10 con el repositorio montado.
+x-dotnet: &dotnet
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  working_dir: /norte
+  volumes:
+    - .:/norte
+    # bin/ y obj/ del contenedor van aparte (ver Directory.Build.props) para no chocar
+    # con lo que compila Visual Studio en Windows.
+    - norte-artefactos:/artefactos
+    # Caché de paquetes NuGet: solo se descargan la primera vez.
+    - norte-nuget:/root/.nuget/packages
+  environment: &entorno-dotnet
+    NORTE_EN_DOCKER: "true"
+    DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+    DOTNET_NOLOGO: "1"
+    # Dentro de Docker la base se llama "postgres" (nombre del servicio), no localhost.
+    # Las variables de entorno reemplazan a user-secrets; los valores salen de .env.
+    ConnectionStrings__Norte: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    Jwt__Clave: ${JWT_CLAVE:?Falta JWT_CLAVE en .env (ver .env.example)}
+  depends_on:
+    postgres:
+      condition: service_healthy
+
 services:
   postgres:
     image: postgres:18
@@ -14,6 +47,67 @@ services:
     volumes:
       # Desde PostgreSQL 18 los datos viven bajo /var/lib/postgresql.
       - norte-datos:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # API en http://localhost:5147 (Swagger en /swagger). Después de cambiar código C#:
+  #   docker compose restart api
+  api:
+    <<: *dotnet
+    container_name: norte-api
+    command: ["dotnet", "run", "--project", "src/Norte.Api", "--no-launch-profile"]
+    ports:
+      - "5147:5147"
+    environment:
+      <<: *entorno-dotnet
+      ASPNETCORE_ENVIRONMENT: Development
+      # 0.0.0.0 para que el puerto se vea desde Windows (localhost sería solo dentro del contenedor).
+      ASPNETCORE_URLS: http://0.0.0.0:5147
+
+  # Aplica las migraciones a la base. Generar una migración nueva (solo Jurgen, riesgo 5):
+  #   docker compose run --rm migraciones migrations add <Nombre> --project src/Norte.DA --startup-project src/Norte.Api
+  migraciones:
+    <<: *dotnet
+    profiles: ["herramientas"]
+    # Primero se compila el API (restaura paquetes en /artefactos), luego se llama a dotnet ef.
+    entrypoint: ["sh", "-c", "dotnet tool restore >/dev/null && dotnet build src/Norte.Api -v q -nologo && dotnet ef \"$$@\"", "--"]
+    command: ["database", "update", "--project", "src/Norte.DA", "--startup-project", "src/Norte.Api"]
+
+  pruebas:
+    <<: *dotnet
+    profiles: ["herramientas"]
+    depends_on: []
+    command: ["dotnet", "test", "Norte.slnx"]
+
+  # Web en http://localhost:5173 con recarga automática. Para lint o build:
+  #   docker compose run --rm web npm run lint
+  #   docker compose run --rm web npm run build
+  web:
+    image: node:26-bookworm-slim
+    container_name: norte-web
+    working_dir: /norte/web/norte-web
+    volumes:
+      - .:/norte
+      # node_modules propio de Linux: los binarios nativos de Windows (oxlint, rolldown)
+      # no sirven en el contenedor y Smart App Control los bloquea en Windows.
+      - norte-node-modules:/norte/web/norte-web/node_modules
+    environment:
+      NORTE_EN_DOCKER: "true"
+      # El navegador corre en Windows, así que el API se llama por localhost.
+      VITE_API_URL: http://localhost:5147
+    # npm install solo descarga lo que falte; después ejecuta el comando pedido.
+    entrypoint: ["sh", "-c", "npm install --no-fund --no-audit --loglevel=error && exec \"$$@\"", "--"]
+    # --host también en el comando: si Vite se reinicia solo (por ejemplo al cambiar de rama),
+    # sigue escuchando fuera del contenedor.
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    ports:
+      - "5173:5173"
 
 volumes:
   norte-datos:
+  norte-artefactos:
+  norte-nuget:
+  norte-node-modules:

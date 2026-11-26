@@ -59,56 +59,108 @@ Cuando empiecen su módulo, copien esa forma.
 
 ## Puesta en marcha
 
+Todo corre **dentro de Docker**: PostgreSQL, el API, las migraciones, las pruebas y la web.
+En Windows 11, *Smart App Control* bloquea las DLL recién compiladas y algunos binarios de
+`node_modules` ("An Application Control policy has blocked this file"). Dentro de los
+contenedores el código corre en Linux y ese bloqueo no aplica, así que **nadie tiene que
+desactivar protecciones de su equipo** y todos usan exactamente las mismas versiones.
+
 ### Requisitos
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download) y Visual Studio 2026 (o VS Code con C# Dev Kit)
-- Node.js 26 LTS (ver `.nvmrc`)
-- Docker Desktop
-- Herramienta de EF Core: `dotnet tool install --global dotnet-ef`
+- Git y **Docker Desktop** (abierto, en "Running").
+- Para editar código: Visual Studio 2026 o VS Code. El .NET 10 SDK y Node.js 26 en Windows
+  son opcionales (sirven para compilar desde el editor, pero no para ejecutar si Smart App
+  Control está activo).
 
-### 1. Base de datos
+### Opción rápida (Windows)
 
-```bash
-cp .env.example .env          # cambien la clave
-docker compose up -d
+Desde la raíz del repositorio:
+
+```cmd
+scripts\configurar-entorno.cmd
 ```
 
-### 2. Secretos del API (no se suben al repositorio)
+El script crea `.env` con claves nuevas (base de datos y JWT), levanta PostgreSQL, aplica las
+migraciones, corre las pruebas y deja el API y la web corriendo. Se puede correr varias veces.
+La primera vez descarga las imágenes de .NET y Node, así que tarda unos minutos.
+
+### A mano
 
 ```bash
-cd src/Norte.Api
-dotnet user-secrets set "ConnectionStrings:Norte" "Host=localhost;Port=5432;Database=norte;Username=norte;Password=LA_CLAVE_DE_SU_.env"
-dotnet user-secrets set "Jwt:Clave" "una-clave-larga-de-al-menos-32-caracteres"
+cp .env.example .env                      # cambien las claves
+docker compose up -d                      # PostgreSQL + API + web
+docker compose run --rm migraciones       # crear o actualizar las tablas
 ```
 
-### 3. Crear las tablas
+| Qué | Dónde o cómo |
+|-----|--------------|
+| Swagger del API | http://localhost:5147/swagger (prueben `GET /api/categorias`) |
+| Web | http://localhost:5173 (se recarga sola al guardar) |
+| Después de cambiar código C# | `docker compose restart api` |
+| Ver errores del API | `docker compose logs -f api` |
+| Pruebas | `docker compose run --rm pruebas` |
+| Lint y build de la web | `docker compose run --rm web npm run lint` · `docker compose run --rm web npm run build` |
+| Nueva migración (solo Jurgen) | `docker compose run --rm migraciones migrations add <Nombre> --project src/Norte.DA --startup-project src/Norte.Api` |
+| Apagar todo | `docker compose down` (los datos se conservan) |
 
-```bash
-dotnet ef database update --project src/Norte.DA --startup-project src/Norte.Api
+Cómo funciona: `docker-compose.yml` monta el repositorio en contenedores con el SDK de .NET 10
+y Node 26. Las claves salen de `.env` como variables de entorno. `Directory.Build.props` manda
+los `bin/` y `obj/` del contenedor a un volumen aparte para que no choquen con los de Visual
+Studio, y `.config/dotnet-tools.json` fija la versión de `dotnet-ef`.
+
+Si alguien no tiene Smart App Control activo, también puede correr todo directo en Windows
+(`dotnet run --project src/Norte.Api --launch-profile http`, con la cadena de conexión y
+`Jwt:Clave` en user-secrets).
+
+## Demostración y defensa (riesgo 10)
+
+**Decisión del grupo:** la demostración se hace con **ejecución local en Docker**, en la compu
+de Jurgen. Una segunda compu del grupo queda lista como respaldo con el mismo procedimiento.
+No se usa un servidor en internet. La propuesta del Avance 1 ya dejaba la ejecución local como
+respaldo, y Docker da exactamente las mismas versiones en cualquier compu (riesgo 9).
+
+**El día anterior** (con internet):
+
+1. `git switch dev` y `git pull origin dev`.
+2. Abrir Docker Desktop y correr `scripts\configurar-entorno.cmd`. Descarga las imágenes,
+   aplica las migraciones y corre las pruebas; todo debe terminar en "Listo".
+3. Abrir http://localhost:5173, crear el usuario de la demo y revisar que el Dashboard cargue.
+4. Repetir los pasos 1 a 3 en la compu de respaldo.
+
+**El día de la defensa:**
+
+1. Abrir Docker Desktop y esperar a que diga "Running".
+2. `docker compose up -d` y abrir http://localhost:5173 (la web) y
+   http://localhost:5147/swagger (el API, para mostrar los endpoints).
+3. Si algo falla: `docker compose logs -f api` para ver el error, o pasar a la compu de respaldo.
+
+Conviene tener internet: al arrancar, el API revisa sus paquetes de NuGet (usa versiones
+`10.0.*`) y la web carga las fuentes de Google Fonts. Correr sin internet no está probado.
+
+## Trabajar con Claude Code
+
+El repositorio ya trae la configuración para que Claude Code trabaje apegado al documento del
+Avance 1:
+
+| Archivo | Para qué sirve |
+|---------|----------------|
+| `CLAUDE.md` | Contrato: reglas, paradigmas, responsables, capas y comandos. Claude lo lee siempre. |
+| `docs/proyecto/` | Resumen del enunciado, resumen de la propuesta y el PDF del Avance 1. |
+| `docs/BITACORA.md` | Registro de cada sesión de trabajo (quién, qué, decisiones, desvíos, pendientes). |
+| `.claude/agents/` | Agentes: `planificador`, `backend`, `frontend`, `pruebas` y `revisor`. |
+| `.claude/skills/` | Comandos: `/implementar-modulo`, `/registrar-bitacora`, `/evidencia-paradigma`, `/preparar-entrega`. |
+| `.claude/hooks/` | Revisiones automáticas: contexto al iniciar, bloqueo de push a `main`/`dev`, aviso antes de migraciones y bitácora obligatoria al terminar y al hacer commit. |
+
+Para empezar, cada integrante abre Claude Code en la carpeta del repositorio, en la rama de su
+módulo, y escribe por ejemplo:
+
+```
+/implementar-modulo movimientos registrar y listar gastos
 ```
 
-### 4. Correr el API
-
-```bash
-dotnet run --project src/Norte.Api --launch-profile http
-```
-
-Swagger queda en http://localhost:5147/swagger. Prueben `GET /api/categorias`.
-
-### 5. Correr la web
-
-```bash
-cd web/norte-web
-cp .env.example .env.local
-npm install
-npm run dev                   # http://localhost:5173
-```
-
-### Pruebas
-
-```bash
-dotnet test
-```
+Requisitos: Node.js instalado (los hooks están en Node) y, en Windows, Git para Windows
+(Claude Code usa Git Bash). Configuren su nombre en git (`git config --global user.name`)
+porque la bitácora y los hooks lo usan para saber quién está trabajando.
 
 ## Cómo trabajamos
 

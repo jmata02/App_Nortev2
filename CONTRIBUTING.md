@@ -34,6 +34,13 @@ git push -u origin feature/modulo-movimientos
 Antes de abrir el PR, traigan lo último de `dev` (`git pull origin dev`) y resuelvan
 conflictos en su rama.
 
+## Bitácora
+
+Cada sesión de trabajo (con o sin Claude Code) se registra en `docs/BITACORA.md` con el formato
+de ese archivo: qué se hizo, el paradigma evidenciado, las decisiones, los desvíos del documento
+y lo pendiente. Va en el mismo commit que el código. Con Claude Code, la skill
+`/registrar-bitacora` la llena y los hooks no dejan hacer commit ni terminar la sesión sin ella.
+
 ## Commits
 
 En español, cortos y con el módulo al inicio:
