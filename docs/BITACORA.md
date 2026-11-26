@@ -34,6 +34,36 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-26 · Jurgen (con Claude) · Coordinación · `chore/administracion`
+
+**Pedido:** confirmar que `dev` quedó bien después del PR #2 y avanzar con las tareas de
+administración.
+
+**Hecho:**
+- Verificación de `dev` (`5351e32`): PR #1 y #2 integrados, `dotnet build` sin errores ni
+  advertencias, 58/58 pruebas, sin cambios de modelo pendientes, lint y build de la web limpios,
+  API (categorías, inicio de sesión, reportes, 401 sin token) y web funcionando en Docker. Las
+  5 ramas de trabajo no tienen commits fuera de `dev`.
+- `CHANGELOG.md`: entrada del PR #2 (el commit del changelog del PR #1 entró dentro de ese PR).
+- README: sección "Demostración y defensa" con el procedimiento del día anterior y del día de
+  la defensa. Tarea de riesgo 10 marcada en `DIVISION_TRABAJO.md`.
+
+**Paradigma evidenciado:** ninguno (coordinación).
+
+**Decisiones:** **riesgo 10 resuelto**: la demostración se hace con ejecución local en Docker en
+la compu de Jurgen, con una segunda compu de respaldo; no se usa servidor en internet. Es la
+opción de respaldo que ya traía la propuesta; se menciona en el Avance 2 como ajuste.
+
+**Desvíos del documento:** ninguno (la propuesta dejaba el despliegue "pendiente de definir"
+con la ejecución local como respaldo).
+
+**Problemas encontrados:** ninguno. No está probado correr la demo sin internet (NuGet con
+versiones `10.0.*` y Google Fonts); el README lo advierte.
+
+**Pendiente:** proteger `main` y `dev` en GitHub (lo hace Jurgen desde Settings). Confirmar la
+decisión de la demo con el grupo y elegir la compu de respaldo. Borrar las ramas integradas
+cuando Jurgen lo decida. Preparar el Avance 2.
+
 ### 2026-11-26 · Jurgen (con Claude) · Dashboard y reportes · `feature/modulo-reportes`
 
 **Pedido:** backend de reportes con reglas puras (paradigma funcional) y conectar el Dashboard.

@@ -112,6 +112,31 @@ Si alguien no tiene Smart App Control activo, también puede correr todo directo
 (`dotnet run --project src/Norte.Api --launch-profile http`, con la cadena de conexión y
 `Jwt:Clave` en user-secrets).
 
+## Demostración y defensa (riesgo 10)
+
+**Decisión del grupo:** la demostración se hace con **ejecución local en Docker**, en la compu
+de Jurgen. Una segunda compu del grupo queda lista como respaldo con el mismo procedimiento.
+No se usa un servidor en internet. La propuesta del Avance 1 ya dejaba la ejecución local como
+respaldo, y Docker da exactamente las mismas versiones en cualquier compu (riesgo 9).
+
+**El día anterior** (con internet):
+
+1. `git switch dev` y `git pull origin dev`.
+2. Abrir Docker Desktop y correr `scripts\configurar-entorno.cmd`. Descarga las imágenes,
+   aplica las migraciones y corre las pruebas; todo debe terminar en "Listo".
+3. Abrir http://localhost:5173, crear el usuario de la demo y revisar que el Dashboard cargue.
+4. Repetir los pasos 1 a 3 en la compu de respaldo.
+
+**El día de la defensa:**
+
+1. Abrir Docker Desktop y esperar a que diga "Running".
+2. `docker compose up -d` y abrir http://localhost:5173 (la web) y
+   http://localhost:5147/swagger (el API, para mostrar los endpoints).
+3. Si algo falla: `docker compose logs -f api` para ver el error, o pasar a la compu de respaldo.
+
+Conviene tener internet: al arrancar, el API revisa sus paquetes de NuGet (usa versiones
+`10.0.*`) y la web carga las fuentes de Google Fonts. Correr sin internet no está probado.
+
 ## Trabajar con Claude Code
 
 El repositorio ya trae la configuración para que Claude Code trabaje apegado al documento del

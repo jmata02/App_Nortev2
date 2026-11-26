@@ -2,6 +2,31 @@
 
 Registro de cambios por módulo. Agreguen su entrada arriba al cerrar cada Pull Request.
 
+## [2026-11-26] — PR #2: Dashboard y reportes (Jurgen)
+
+### Agregado
+- **Paradigma funcional**: `ReglaResumenFinanciero` en `Norte.Reglas`, con funciones puras
+  (`Where`, `GroupBy`, `Select`, `Aggregate`) para totales del mes, variación del balance,
+  gasto por categoría y tendencia. Porcentajes con 2 decimales y redondeo `AwayFromZero`.
+- `PeriodoMensual` (record inmutable que se valida solo) y los DTOs del módulo.
+- `ReporteDA` con `IDbContextFactory` y `ReporteFlujo` con `Task.WhenAll` y `TimeProvider`.
+- 28 pruebas nuevas (58 en total).
+- Web: `reportesApi.js`; el Dashboard muestra datos reales y se recarga solo con
+  `cambiosFinancieros$` (`debounceTime`).
+- Evidencia del paradigma funcional en `docs/EVIDENCIA_PARADIGMAS.md`.
+
+### Endpoints expuestos (todos con `[Authorize]`)
+- `GET /api/reportes/resumen?anio=&mes=` — totales, balance, variación, deudas activas y metas en curso.
+- `GET /api/reportes/gasto-por-categoria?anio=&mes=` — gasto por categoría con porcentaje.
+- `GET /api/reportes/tendencia?meses=6` — ingresos, gastos y balance de los últimos meses (1 a 12).
+
+### Incluye también
+- La entrada del PR #1 en este CHANGELOG y `--host` fijo para Vite en Docker.
+
+### Pendiente con otros módulos
+- "Deudas activas" (`MontoPendiente > 0`) y "metas en curso" (`FechaLimite >= hoy`): confirmar
+  con Carlos y Jessica. Movimientos debe llamar a `publicarCambio(...)` al guardar.
+
 ## [2026-11-26] — PR #1: Entorno Docker, Autenticación y tema "Norte neón" (Jurgen)
 
 ### Agregado

@@ -42,7 +42,7 @@ Frontend
 
 Coordinación
 - [ ] Proteger `main` y `dev` en GitHub (PR obligatorio) y revisar merges a `dev`.
-- [ ] Decidir dónde se despliega o cómo se corre local para la demostración (riesgo 10).
+- [x] Decidir dónde se despliega o cómo se corre local para la demostración (riesgo 10): local con Docker, ver README.
 
 Defensa: arquitectura general, flujo de una solicitud por las capas, paradigma funcional.
 
