@@ -34,6 +34,41 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-26 · Jurgen (con Claude) · Agente verificador de integración · `chore/agente-verificador`
+
+**Pedido:** un agente que revise absolutamente todo lo que entra a `main` y a `dev` para no
+tener problemas.
+
+**Hecho:**
+- `.claude/agents/verificador-integracion.md`: revisa el historial (commits directos, rama al
+  día, conflictos con `git merge-tree`, mensajes y autores), archivos prohibidos y secretos,
+  bitácora, changelog, migraciones (solo Jurgen), cambios de stack, `Program.cs`, dueños de
+  módulos y reglas de código; corre compilación, pruebas, migraciones pendientes, lint y build
+  de la web; para `main` agrega lo de una entrega. Da un veredicto LISTO / CON OBSERVACIONES /
+  NO LISTO. No modifica nada ni cambia de rama.
+- `.claude/skills/verificar-integracion/SKILL.md`: comando `/verificar-integracion [rama|dev|main]`.
+- `CLAUDE.md` (tabla de agentes y skills) y `CONTRIBUTING.md` (verificar antes de cada merge).
+
+**Paradigma evidenciado:** ninguno (proceso del repositorio).
+
+**Decisiones:** el agente no cambia de rama: si la rama a verificar no está en la carpeta, solo
+hace las revisiones estáticas y lo dice. No se agregó integración continua en GitHub (Actions):
+sería otra herramienta fuera del documento; queda como idea a conversar con el grupo.
+
+**Desvíos del documento:** ninguno.
+
+**Problemas encontrados:** al probar el agente sobre `dev`, encontró que el PR #3
+(`chore/administracion`) se hizo merge en **`main` en vez de `dev`**: `main` quedó con 2 commits
+que `dev` no tiene (CHANGELOG del PR #2 y la sección de la demo). Esta rama sale de
+`chore/administracion`, así que su PR hacia `dev` trae ese contenido y las dos ramas quedan
+iguales. Se agregó al agente una revisión fija de "`main` adelante de `dev`" y de la base del PR.
+El agente también señaló, como ya estaba registrado, que los 5 commits de la configuración
+inicial tienen autor "Claude" (incluida la migración `Inicial`, generada en la compu de Jurgen);
+no se reescribe la historia de `dev`.
+
+**Pendiente:** PR de esta rama **con base `dev`**. Probar el agente con el primer PR de un
+compañero (en una sesión nueva de Claude Code ya aparece como `verificador-integracion`).
+
 ### 2026-11-26 · Jurgen (con Claude) · Coordinación · `chore/administracion`
 
 **Pedido:** confirmar que `dev` quedó bien después del PR #2 y avanzar con las tareas de

@@ -127,6 +127,7 @@ web/norte-web        React: api/, componentes/, estilos/, reactivo/, modulos/<mo
 | Código React | Agente `frontend` |
 | Pruebas xUnit | Agente `pruebas` |
 | Revisar alineación con el documento, paradigmas y reglas | Agente `revisor` |
+| Verificar todo antes de un merge a `dev` o a `main` | Skill `/verificar-integracion [rama\|dev\|main]` (agente `verificador-integracion`) |
 | Registrar en la bitácora | Skill `/registrar-bitacora` |
 | Documentar la evidencia de un paradigma | Skill `/evidencia-paradigma <paradigma>` |
 | Preparar material del Avance 2 o la entrega final | Skill `/preparar-entrega <avance2\|final>` |
