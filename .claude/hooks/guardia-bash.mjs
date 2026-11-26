@@ -25,7 +25,8 @@ const decidir = (decision, motivo) =>
     },
   })
 
-if (/dotnet\s+ef\s+migrations\s+(add|remove)/.test(comando)) {
+// También cubre la forma con Docker: docker compose run --rm migraciones migrations add ...
+if (/(dotnet\s+ef|migraciones)\s+migrations\s+(add|remove)/.test(comando)) {
   decidir(
     'ask',
     'Regla del grupo (riesgo 5): solo Jurgen genera o quita migraciones para no romper el ModelSnapshot. ' +

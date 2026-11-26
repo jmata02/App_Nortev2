@@ -1,67 +1,258 @@
-.layout {
+/* Estructura de la aplicación: menú lateral de vidrio + contenido, con un piso neón al fondo. */
+
+.app {
+  position: relative;
+  z-index: 1;
   display: flex;
   min-height: 100vh;
 }
 
-.layout__menu {
-  width: 220px;
+.app::before {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  left: -50%;
+  right: -50%;
+  bottom: -8vh;
+  height: 52vh;
+  pointer-events: none;
+  opacity: 0.32;
+  background-image:
+    linear-gradient(rgba(255, 46, 136, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.55) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(520px) rotateX(66deg);
+  transform-origin: bottom;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 75%);
+  mask-image: linear-gradient(to top, #000 10%, transparent 75%);
+}
+
+/* ---------- Logo ---------- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  position: relative;
+  z-index: 1;
+}
+
+.logo__palmera {
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
-  background: var(--color-tinta);
-  color: var(--color-papel);
-  padding: var(--espacio-4) var(--espacio-3);
+  overflow: visible;
+  filter: drop-shadow(0 0 6px rgba(255, 46, 136, 0.8)) drop-shadow(0 0 14px rgba(139, 92, 246, 0.5));
 }
 
-.layout__marca {
-  display: block;
+.logo__nombre {
   font-family: var(--fuente-titulos);
-  font-size: 1.4rem;
-  margin-bottom: var(--espacio-5);
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
 }
 
-.layout__enlace {
-  display: block;
-  padding: var(--espacio-2);
-  border-radius: var(--radio);
-  color: #c7cbd6;
+/* ---------- Menú lateral ---------- */
+.menu {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.8rem 1.2rem;
+  background: rgba(10, 6, 18, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--color-borde);
+}
+
+.menu__navegacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.enlace {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  color: var(--color-texto-suave);
   text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  position: relative;
+  transition: color 0.2s, background 0.2s;
 }
 
-.layout__enlace.active {
-  background: var(--color-papel);
-  color: var(--color-tinta);
+.enlace .icono {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
 }
 
-.layout__contenido {
+.enlace:hover {
+  color: var(--color-texto);
+  background: var(--color-vidrio);
+}
+
+/* NavLink agrega la clase "active" a la sección actual */
+.enlace.active {
+  color: var(--color-texto);
+  background: linear-gradient(90deg, rgba(255, 46, 136, 0.18), transparent);
+}
+
+.enlace.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--color-magenta);
+  box-shadow: 0 0 12px var(--color-magenta);
+}
+
+.menu__pie {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--color-borde);
+  min-width: 0;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, var(--color-magenta), var(--color-violeta));
+}
+
+.menu__usuario {
+  min-width: 0;
+  font-size: 0.88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu__usuario small {
+  display: block;
+  color: var(--color-texto-tenue);
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.salir {
+  margin-left: auto;
+  border: 1px solid var(--color-borde);
+  background: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  color: var(--color-texto-suave);
+  font-size: 0.78rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.salir:hover {
+  color: var(--color-coral);
+  border-color: var(--color-coral);
+}
+
+/* ---------- Contenido ---------- */
+.contenido {
   flex: 1;
-  padding: var(--espacio-5);
-  max-width: 1180px;
+  min-width: 0;
+  padding: 2.2rem 2.5rem 3rem;
+  max-width: 1240px;
+  animation: aparecer 0.45s var(--curva-suave);
 }
 
-@media (max-width: 760px) {
-  .layout {
+@keyframes aparecer {
+  from {
+    opacity: 0.001;
+    transform: translateY(10px);
+  }
+}
+
+/* ---------- Celular: el menú pasa a una barra arriba ---------- */
+@media (max-width: 820px) {
+  .app {
     flex-direction: column;
   }
 
-  .layout__menu {
+  .menu {
     width: 100%;
-    padding: var(--espacio-3);
+    height: auto;
+    z-index: 5;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--espacio-3);
+    padding: 0.8rem 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-borde);
   }
 
-  .layout__menu nav {
-    display: flex;
+  .menu .logo__nombre {
+    display: none;
+  }
+
+  .menu__navegacion {
+    flex-direction: row;
     overflow-x: auto;
-    gap: var(--espacio-1);
+    min-width: 0;
+    flex: 1;
   }
 
-  .layout__marca {
-    margin-bottom: var(--espacio-2);
-  }
-
-  .layout__enlace {
+  .enlace {
+    padding: 0.55rem 0.7rem;
     white-space: nowrap;
   }
 
-  .layout__contenido {
-    padding: var(--espacio-3);
+  .enlace span {
+    display: none;
+  }
+
+  .enlace.active span {
+    display: inline;
+  }
+
+  .enlace.active::before {
+    left: 20%;
+    right: 20%;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 3px;
+  }
+
+  .menu__pie {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .menu__usuario,
+  .avatar {
+    display: none;
+  }
+
+  .contenido {
+    padding: 1.5rem 16px 2.5rem;
   }
 }

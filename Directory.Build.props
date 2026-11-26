@@ -1,0 +1,15 @@
+<Project>
+  <!--
+    Dentro de Docker (NORTE_EN_DOCKER=true, ver docker-compose.yml) los bin/ y obj/ van a
+    /artefactos en lugar de la carpeta del proyecto. Así lo que compila Linux no choca con lo
+    que compila Visual Studio en Windows (rutas distintas en obj/project.assets.json).
+    Fuera de Docker no cambia nada.
+  -->
+  <PropertyGroup Condition="'$(NORTE_EN_DOCKER)' == 'true'">
+    <BaseOutputPath>/artefactos/$(MSBuildProjectName)/bin/</BaseOutputPath>
+    <BaseIntermediateOutputPath>/artefactos/$(MSBuildProjectName)/obj/</BaseIntermediateOutputPath>
+    <!-- Ignorar los bin/ y obj/ que deja Windows dentro de cada proyecto (si no, sus .cs
+         generados se compilan dos veces). -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);bin/**;obj/**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

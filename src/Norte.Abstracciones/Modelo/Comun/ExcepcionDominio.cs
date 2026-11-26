@@ -22,6 +22,15 @@ public class ReglaNegocioException : ExcepcionDominio
     public ReglaNegocioException(string mensaje) : base(mensaje) { }
 }
 
+/// <summary>
+/// Se traduce a 401 Unauthorized. El mensaje es el mismo si el correo no existe o si la
+/// contraseña es incorrecta, para no revelar qué correos tienen cuenta.
+/// </summary>
+public class CredencialesInvalidasException : ExcepcionDominio
+{
+    public CredencialesInvalidasException() : base("Correo o contraseña incorrectos.") { }
+}
+
 /// <summary>Se traduce a 409 Conflict: el dato ya existe o cambió mientras se editaba.</summary>
 public class ConflictoException : ExcepcionDominio
 {

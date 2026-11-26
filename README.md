@@ -59,69 +59,58 @@ Cuando empiecen su módulo, copien esa forma.
 
 ## Puesta en marcha
 
+Todo corre **dentro de Docker**: PostgreSQL, el API, las migraciones, las pruebas y la web.
+En Windows 11, *Smart App Control* bloquea las DLL recién compiladas y algunos binarios de
+`node_modules` ("An Application Control policy has blocked this file"). Dentro de los
+contenedores el código corre en Linux y ese bloqueo no aplica, así que **nadie tiene que
+desactivar protecciones de su equipo** y todos usan exactamente las mismas versiones.
+
 ### Requisitos
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download) y Visual Studio 2026 (o VS Code con C# Dev Kit)
-- Node.js 26 LTS (ver `.nvmrc`)
-- Docker Desktop
-- Herramienta de EF Core: `dotnet tool install --global dotnet-ef`
+- Git y **Docker Desktop** (abierto, en "Running").
+- Para editar código: Visual Studio 2026 o VS Code. El .NET 10 SDK y Node.js 26 en Windows
+  son opcionales (sirven para compilar desde el editor, pero no para ejecutar si Smart App
+  Control está activo).
 
 ### Opción rápida (Windows)
 
-Con Docker Desktop abierto, desde la raíz del repositorio:
+Desde la raíz del repositorio:
 
 ```cmd
 scripts\configurar-entorno.cmd
 ```
 
-El script crea `.env` con una clave nueva, levanta PostgreSQL, guarda la cadena de conexión y la
-clave JWT en user-secrets, instala `dotnet-ef`, compila, aplica las migraciones e instala las
-dependencias de la web. Se puede correr varias veces. Si prefieren hacerlo a mano, estos son
-los pasos:
+El script crea `.env` con claves nuevas (base de datos y JWT), levanta PostgreSQL, aplica las
+migraciones, corre las pruebas y deja el API y la web corriendo. Se puede correr varias veces.
+La primera vez descarga las imágenes de .NET y Node, así que tarda unos minutos.
 
-### 1. Base de datos
-
-```bash
-cp .env.example .env          # cambien la clave
-docker compose up -d
-```
-
-### 2. Secretos del API (no se suben al repositorio)
+### A mano
 
 ```bash
-cd src/Norte.Api
-dotnet user-secrets set "ConnectionStrings:Norte" "Host=localhost;Port=5432;Database=norte;Username=norte;Password=LA_CLAVE_DE_SU_.env"
-dotnet user-secrets set "Jwt:Clave" "una-clave-larga-de-al-menos-32-caracteres"
+cp .env.example .env                      # cambien las claves
+docker compose up -d                      # PostgreSQL + API + web
+docker compose run --rm migraciones       # crear o actualizar las tablas
 ```
 
-### 3. Crear las tablas
+| Qué | Dónde o cómo |
+|-----|--------------|
+| Swagger del API | http://localhost:5147/swagger (prueben `GET /api/categorias`) |
+| Web | http://localhost:5173 (se recarga sola al guardar) |
+| Después de cambiar código C# | `docker compose restart api` |
+| Ver errores del API | `docker compose logs -f api` |
+| Pruebas | `docker compose run --rm pruebas` |
+| Lint y build de la web | `docker compose run --rm web npm run lint` · `docker compose run --rm web npm run build` |
+| Nueva migración (solo Jurgen) | `docker compose run --rm migraciones migrations add <Nombre> --project src/Norte.DA --startup-project src/Norte.Api` |
+| Apagar todo | `docker compose down` (los datos se conservan) |
 
-```bash
-dotnet ef database update --project src/Norte.DA --startup-project src/Norte.Api
-```
+Cómo funciona: `docker-compose.yml` monta el repositorio en contenedores con el SDK de .NET 10
+y Node 26. Las claves salen de `.env` como variables de entorno. `Directory.Build.props` manda
+los `bin/` y `obj/` del contenedor a un volumen aparte para que no choquen con los de Visual
+Studio, y `.config/dotnet-tools.json` fija la versión de `dotnet-ef`.
 
-### 4. Correr el API
-
-```bash
-dotnet run --project src/Norte.Api --launch-profile http
-```
-
-Swagger queda en http://localhost:5147/swagger. Prueben `GET /api/categorias`.
-
-### 5. Correr la web
-
-```bash
-cd web/norte-web
-cp .env.example .env.local
-npm install
-npm run dev                   # http://localhost:5173
-```
-
-### Pruebas
-
-```bash
-dotnet test
-```
+Si alguien no tiene Smart App Control activo, también puede correr todo directo en Windows
+(`dotnet run --project src/Norte.Api --launch-profile http`, con la cadena de conexión y
+`Jwt:Clave` en user-secrets).
 
 ## Trabajar con Claude Code
 

@@ -1,25 +1,57 @@
-/* Tokens de diseño tomados del prototipo presentado al profesor. Usen solo estas variables. */
+/*
+ * Tokens del tema "Norte neón" (aprobado por el grupo, reemplaza al prototipo anterior).
+ * Usen SOLO estas variables. Los colores tienen significado:
+ *   magenta = marca y botones · cian = ingreso / al día · coral = gasto / excedido
+ *   ámbar = pendiente / cerca del límite · violeta = metas y acentos secundarios
+ *
+ * Excepción acordada: los brillos, sombras y degradados decorativos de los CSS usan rgba()
+ * con estos mismos colores y una transparencia (por ejemplo rgba(255, 46, 136, 0.35) es
+ * magenta al 35 %). En JavaScript siempre se usan los tokens: var(--color-...) o colorToken().
+ */
 :root {
-  --color-tinta: #14213d;
-  --color-papel: #f7f5f0;
-  --color-papel-tenue: #eeebe3;
-  --color-verde: #3e7c59;
-  --color-verde-tenue: #e7efe9;
-  --color-oxido: #b54a2e;
-  --color-oxido-tenue: #f5e5df;
-  --color-ambar: #c79a3d;
-  --color-linea: #dad5c8;
-  --color-texto: #22262e;
-  --color-texto-suave: #6b6459;
+  /* Fondo y superficies */
+  --color-fondo: #0a0612;
+  --color-fondo-2: #150b24;
+  --color-vidrio: rgba(255, 255, 255, 0.045);
+  --color-vidrio-fuerte: rgba(255, 255, 255, 0.08);
+  --color-borde: rgba(255, 255, 255, 0.1);
 
-  --fuente-titulos: 'Fraunces', Georgia, serif;
-  --fuente-texto: 'IBM Plex Sans', system-ui, sans-serif;
-  --fuente-numeros: 'IBM Plex Mono', ui-monospace, monospace;
+  /* Texto */
+  --color-texto: #f6f0ff;
+  --color-texto-suave: #a99cc4;
+  --color-texto-tenue: #6e6488;
 
-  --radio: 4px;
+  /* Acentos neón */
+  --color-magenta: #ff2e88;
+  --color-violeta: #8b5cf6;
+  --color-coral: #ff6b4a;
+  --color-ambar: #ffb547;
+  --color-cian: #22e3d0;
+
+  /* Significado (úsenlos en lugar del color directo) */
+  --color-ingreso: var(--color-cian);
+  --color-gasto: var(--color-coral);
+  --color-ok: var(--color-cian);
+  --color-alerta: var(--color-coral);
+  --color-pendiente: var(--color-ambar);
+
+  /* Tipografía */
+  --fuente-titulos: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --fuente-texto: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fuente-numeros: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  /* Forma y espacio */
+  --radio: 14px;
+  --radio-grande: 18px;
+  --sombra: 0 20px 50px -20px rgba(0, 0, 0, 0.7);
   --espacio-1: 0.25rem;
   --espacio-2: 0.5rem;
   --espacio-3: 1rem;
   --espacio-4: 1.5rem;
   --espacio-5: 2.5rem;
+
+  /* Animación */
+  --curva-suave: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  color-scheme: dark;
 }
