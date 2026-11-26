@@ -209,3 +209,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Estados de carga y vacío ---------- */
+.dashboard__cargando,
+.dashboard__vacio {
+  color: var(--color-texto-suave);
+  padding: var(--espacio-4) 0;
+}
+
+.dashboard__vacio {
+  text-align: center;
+}
+
+.alerta .accion {
+  margin-top: var(--espacio-2);
+}

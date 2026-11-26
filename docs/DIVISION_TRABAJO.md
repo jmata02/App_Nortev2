@@ -22,22 +22,22 @@ Swagger, manejo de errores) y la base de la web (rutas, menú, estilos, cliente 
 sin modificar los datos originales.
 
 Backend
-- [ ] Generar la primera migración (`Inicial`) y verificar que todos puedan crear la BD.
-- [ ] Autenticación: `IUsuarioDA`, `AutenticacionFlujo` (registro e inicio de sesión), hash de
+- [x] Generar la primera migración (`Inicial`) y verificar que todos puedan crear la BD.
+- [x] Autenticación: `IUsuarioDA`, `AutenticacionFlujo` (registro e inicio de sesión), hash de
   contraseña con `PasswordHasher<Usuario>`, `IGeneradorToken` (JWT con el claim `sub` = id
   del usuario) y `AutenticacionController`:
   `POST /api/autenticacion/registro`, `POST /api/autenticacion/inicio-sesion`.
-- [ ] Reportes: reglas **puras** en `Norte.Reglas` (por ejemplo `ReglaResumenFinanciero`)
+- [x] Reportes: reglas **puras** en `Norte.Reglas` (por ejemplo `ReglaResumenFinanciero`)
   con `Where`, `Select`, `GroupBy` y `Aggregate`: total de ingresos y gastos, gasto por
   categoría y tendencia de los últimos meses.
-- [ ] `IReporteDA` + `ReportesController`: `GET /api/reportes/resumen`,
+- [x] `IReporteDA` + `ReportesController`: `GET /api/reportes/resumen`,
   `/gasto-por-categoria` y `/tendencia`. Para cargar varias piezas a la vez usar
   `IDbContextFactory<NorteDbContext>` (un contexto por tarea) con `Task.WhenAll`.
 
 Frontend
-- [ ] Páginas de inicio de sesión y registro (guardar el token con `guardarToken`).
-- [ ] Proteger las rutas cuando no hay sesión.
-- [ ] Dashboard con gráficas (Chart.js) que se actualiza al suscribirse a
+- [x] Páginas de inicio de sesión y registro (guardar el token con `guardarToken`).
+- [x] Proteger las rutas cuando no hay sesión.
+- [x] Dashboard con gráficas (Chart.js) que se actualiza al suscribirse a
   `cambiosFinancieros$` (coordinar con Mauricio).
 
 Coordinación
