@@ -5,6 +5,55 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 ("problemas encontrados" y "ajustes desde el primer avance") y la defensa.
 
 - La entrada más reciente va **arriba**, justo debajo de la línea `<!-- ENTRADAS -->`.
+
+### 2026-11-24 · Jurgen (con Claude) · Autenticación · `feature/modulo-autenticacion`
+
+**Pedido:** módulo de Autenticación: registro e inicio de sesión con JWT (backend, pruebas y web).
+
+**Hecho (backend y pruebas):**
+- `Usuario`: setters privados y fábrica `Crear(...)` que valida nombre, correo, hash y fecha UTC.
+- DTOs en `Modelo/Usuarios/`: `RegistroSolicitudDto`, `InicioSesionSolicitudDto` (con
+  DataAnnotations), `SesionRespuestaDto` y `TokenGenerado`.
+- `CredencialesInvalidasException` (401) en `ExcepcionDominio.cs` y su caso en `ExcepcionesFiltro.cs`.
+- Interfaces: `IUsuarioDA`, `IAutenticacionFlujo`, `IHasherContrasena`, `IGeneradorToken`,
+  `IReglaContrasenaSegura`, `IReglaCorreoNormalizado`, `IAutenticacionController`.
+- `Norte.Reglas`: `ReglaContrasenaSegura` (8+ caracteres, letra, número, sin espacios en los
+  bordes) y `ReglaCorreoNormalizado` (trim + minúsculas).
+- `UsuarioDA` (convierte la violación del índice único en `ConflictoException`),
+  `AutenticacionFlujo`, `HasherContrasena` (PasswordHasher de Identity), `GeneradorTokenJwt`
+  (claim `sub` = Id), `AutenticacionController` y `ModuloAutenticacion`.
+- Endpoints: `POST /api/autenticacion/registro` (201 con token, 400, 409) y
+  `POST /api/autenticacion/inicio-sesion` (200, 400, 401).
+- 22 pruebas nuevas: reglas, entidad `Usuario` y `AutenticacionFlujo` con DA, hasher y token falsos.
+
+**Paradigma evidenciado:**
+- Funcional: `Norte.Reglas/ReglaContrasenaSegura.cs` → `ObtenerIncumplimientos` (requisitos
+  como datos, `Where` + `Select` sin estado).
+- Orientado a objetos: `Usuario.Crear` (encapsulamiento con setters privados).
+
+**Decisiones:** credenciales incorrectas → 401 con el mismo mensaje si el correo no existe o la
+contraseña es mala (no revela cuentas). El registro devuelve el token (sesión iniciada). Hasher y
+generador de token viven en `Norte.Api/Servicios` junto a `UsuarioActual`. En la web, un 401
+borrará el token y llevará a `/iniciar-sesion`.
+
+**Desvíos del documento:** menor. La propuesta dice "ASP.NET Core Identity (hash de
+contraseñas) + JWT"; se usa solo el `PasswordHasher` de Identity (PBKDF2 con sal) sobre la tabla
+`usuarios` existente, sin `AddIdentity`/`UserManager` ni tablas `AspNet*`. Motivo: el documento
+pide Identity para el hash, el JWT ya cubre la sesión y el sistema completo agregaría ~7 tablas y
+otra migración. Decidido por Jurgen; avisar al grupo y corregirlo en el documento del Avance 2.
+
+**Problemas encontrados:** ninguno. Setters privados en `Usuario` no requieren migración
+(`has-pending-model-changes` sin cambios).
+
+**Verificación:** `dotnet build` sin errores · 29/29 pruebas en Docker · en el API real: registro
+201, correo repetido 409, contraseña débil 400, correo inválido 400, inicio de sesión 200,
+credenciales malas 401; el token trae `sub`, `iss`, `aud` y vence a las 2 h; el hash guardado es
+de Identity (`AQAAAAIAAY...`) y no hay tablas `AspNet*`.
+
+**Pendiente:** web (inicio de sesión, registro, rutas protegidas, cerrar sesión, 401 → salir),
+revisión con el agente `revisor`, commit y PR. Archivos compartidos tocados (avisar en el PR):
+`ExcepcionDominio.cs`, `ExcepcionesFiltro.cs`.
+
 - Una entrada por sesión. Si la sesión sigue el mismo día en el mismo módulo, se amplía la misma.
 - Claude Code la actualiza antes de terminar y antes de cada commit (los hooks lo verifican).
 - `CHANGELOG.md` es otra cosa: resume cada Pull Request.
