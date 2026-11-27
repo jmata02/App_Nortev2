@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import FondoNeon from './componentes/FondoNeon.jsx'
+import FondoTornasol from './componentes/FondoTornasol.jsx'
 import Layout from './componentes/Layout.jsx'
 import RutaProtegida from './componentes/RutaProtegida.jsx'
 import InicioSesionPagina from './modulos/autenticacion/InicioSesionPagina.jsx'
@@ -16,7 +16,7 @@ import PresupuestosPagina from './modulos/presupuestos/PresupuestosPagina.jsx'
 export default function App() {
   return (
     <>
-      <FondoNeon />
+      <FondoTornasol />
       <Routes>
         <Route path="/iniciar-sesion" element={<InicioSesionPagina />} />
         <Route path="/registro" element={<RegistroPagina />} />

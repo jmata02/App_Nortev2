@@ -1,39 +1,101 @@
 /*
- * Tokens del tema "Norte neón" (aprobado por el grupo, reemplaza al prototipo anterior).
- * Usen SOLO estas variables. Los colores tienen significado:
- *   magenta = marca y botones · cian = ingreso / al día · coral = gasto / excedido
- *   ámbar = pendiente / cerca del límite · violeta = metas y acentos secundarios
+ * Tokens del tema "Norte tornasol" (claro). Reemplaza al tema "Norte neón" (oscuro), que se
+ * parecía demasiado al proyecto de otro grupo. Estilo de ciudad costera de noche, pero al
+ * revés: predomina el blanco.
  *
- * Excepción acordada: los brillos, sombras y degradados decorativos de los CSS usan rgba()
- * con estos mismos colores y una transparencia (por ejemplo rgba(255, 46, 136, 0.35) es
- * magenta al 35 %). En JavaScript siempre se usan los tokens: var(--color-...) o colorToken().
+ * Armonía: UN solo degradado de marca (--degradado-tornasol) que empieza rosado como el logo y
+ * termina azul como el control, en todo lo que se toca (botones, menú, filtros, saldo, metas).
+ * Los botones no tienen contorno: flotan con un resplandor suave de su propio color
+ * (--brillo-marca) que se pierde en el blanco.
+ *
+ * Usen SOLO estas variables. Para transparencias, mezclen un token con color-mix():
+ *   color-mix(in srgb, var(--color-violeta) 15%, transparent)
+ *
+ * Significado de los colores (no los cambien de función):
+ *   marca (rosa fuerte y el degradado tornasol) = botones, navegación, logo
+ *   ingreso / ok = turquesa · gasto / alerta = frambuesa · pendiente = ámbar · metas = violeta
  */
 :root {
   /* Fondo y superficies */
-  --color-fondo: #0a0612;
-  --color-fondo-2: #150b24;
-  --color-vidrio: rgba(255, 255, 255, 0.045);
-  --color-vidrio-fuerte: rgba(255, 255, 255, 0.08);
-  --color-borde: rgba(255, 255, 255, 0.1);
+  --color-fondo: #faf7fc;
+  --color-fondo-2: #ffffff;
+  --color-superficie: #ffffff;
+  --color-vidrio: color-mix(in srgb, var(--color-violeta) 6%, transparent);
+  --color-borde: color-mix(in srgb, var(--color-tinta) 10%, transparent);
 
   /* Texto */
-  --color-texto: #f6f0ff;
-  --color-texto-suave: #a99cc4;
-  --color-texto-tenue: #6e6488;
+  --color-tinta: #24183f;
+  --color-texto: var(--color-tinta);
+  --color-texto-suave: #625879;
+  --color-texto-tenue: #9a90b0;
+  --color-sobre-tornasol: #ffffff;
 
-  /* Acentos neón */
-  --color-magenta: #ff2e88;
-  --color-violeta: #8b5cf6;
-  --color-coral: #ff6b4a;
-  --color-ambar: #ffb547;
-  --color-cian: #22e3d0;
+  /* Tornasol (los colores del control) */
+  --color-celeste: #31c4f3;
+  --color-azul: #2e6bff;
+  --color-indigo: #4b3ce0;
+  --color-violeta: #7a3bd6;
+  --color-morado: #4e1f7a;
+  --color-rosa: #e2509a;
 
-  /* Significado (úsenlos en lugar del color directo) */
-  --color-ingreso: var(--color-cian);
-  --color-gasto: var(--color-coral);
-  --color-ok: var(--color-cian);
-  --color-alerta: var(--color-coral);
+  /* Atardecer rosado (logo y pantalla de acceso): rosa fuerte → rosa → lavanda → pervinca.
+     El pervinca enlaza con el celeste y el azul del tornasol. */
+  --color-rosa-fuerte: #c8288f;
+  --color-rosa-chicle: #e75db4;
+  --color-rosa-claro: #ffc9ea;
+  --color-lavanda: #a98be0;
+  --color-pervinca: #8e9ee8;
+  --color-ciruela: #3a1730;
+
+  /* Significado */
+  --color-turquesa: #0e9f8f;
+  --color-frambuesa: #d6336c; /* rosado intenso: armoniza con la marca, pero se lee como alerta */
+  --color-ambar: #d98a0b;
+  --color-marca: var(--color-rosa-fuerte);
+  --color-ingreso: var(--color-turquesa);
+  --color-gasto: var(--color-frambuesa);
+  --color-ok: var(--color-turquesa);
+  --color-alerta: var(--color-frambuesa);
   --color-pendiente: var(--color-ambar);
+
+  /* Degradados */
+  /* Degradado de marca: rosa (logo) → violeta → azul (control). */
+  --degradado-tornasol: linear-gradient(
+    115deg,
+    var(--color-rosa-fuerte) 0%,
+    var(--color-rosa-chicle) 22%,
+    var(--color-violeta) 55%,
+    var(--color-indigo) 80%,
+    var(--color-azul) 100%
+  );
+  /* Fondo del logo y de la escena de acceso */
+  --degradado-atardecer: linear-gradient(
+    180deg,
+    var(--color-rosa-fuerte) 0%,
+    var(--color-rosa-chicle) 38%,
+    var(--color-lavanda) 72%,
+    var(--color-pervinca) 100%
+  );
+  /* Sol de la pantalla de acceso */
+  --degradado-sol: linear-gradient(
+    180deg,
+    var(--color-sobre-tornasol) 0%,
+    var(--color-rosa-claro) 45%,
+    var(--color-celeste) 100%
+  );
+
+  /* Sombras (tinte violeta, nunca negro puro) y la sombra sólida del estilo sticker */
+  --sombra: 0 24px 50px -24px color-mix(in srgb, var(--color-violeta) 38%, transparent);
+  --sombra-suave: 0 10px 24px -14px color-mix(in srgb, var(--color-tinta) 22%, transparent);
+  /* Halo centrado y tenue alrededor del botón (casi sin desplazamiento hacia abajo, para que
+     no deje una mancha debajo). */
+  --brillo-marca:
+    0 2px 6px -2px color-mix(in srgb, var(--color-rosa-fuerte) 30%, transparent),
+    0 0 16px -4px color-mix(in srgb, var(--color-violeta) 22%, transparent);
+  --brillo-marca-fuerte:
+    0 3px 10px -3px color-mix(in srgb, var(--color-rosa-fuerte) 38%, transparent),
+    0 0 22px -4px color-mix(in srgb, var(--color-violeta) 30%, transparent);
+  --brillo-marca-presionado: 0 1px 4px -1px color-mix(in srgb, var(--color-violeta) 35%, transparent);
 
   /* Tipografía */
   --fuente-titulos: 'Unbounded', 'Arial Black', system-ui, sans-serif;
@@ -43,7 +105,6 @@
   /* Forma y espacio */
   --radio: 14px;
   --radio-grande: 18px;
-  --sombra: 0 20px 50px -20px rgba(0, 0, 0, 0.7);
   --espacio-1: 0.25rem;
   --espacio-2: 0.5rem;
   --espacio-3: 1rem;
@@ -53,5 +114,5 @@
   /* Animación */
   --curva-suave: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  color-scheme: dark;
+  color-scheme: light;
 }

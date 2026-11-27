@@ -174,7 +174,7 @@ function Reportes({ resumen, categorias, tendencia }) {
           )}
           <MiniGrafica
             serie={tendencia.map((t) => t.balance)}
-            color="var(--color-ambar)"
+            color="var(--color-sobre-tornasol)"
             alto={54}
             etiqueta={`Balance de los últimos ${tendencia.length} meses`}
           />

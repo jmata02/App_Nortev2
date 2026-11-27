@@ -1,5 +1,5 @@
 import { Bar, Line } from 'react-chartjs-2'
-import { brilloNeon, colorToken, degradado, ejesColones, PALETA_GRAFICAS, tooltipColones } from '../../componentes/graficas.js'
+import { brilloTornasol, colorToken, degradado, ejesColones, PALETA_GRAFICAS, tooltipColones } from '../../componentes/graficas.js'
 import { prefiereMenosMovimiento } from '../../utilidades/formato.js'
 
 /** Barras de gasto por categoría: cada barra con un color de la paleta, en degradado y con brillo. */
@@ -7,7 +7,7 @@ export function GraficaCategorias({ datos }) {
   const colores = datos.map((_, posicion) => colorToken(PALETA_GRAFICAS[posicion % PALETA_GRAFICAS.length]))
   return (
     <Bar
-      plugins={[brilloNeon]}
+      plugins={[brilloTornasol]}
       aria-label="Gasto por categoría"
       data={{
         labels: datos.map((d) => d.categoria),
@@ -16,7 +16,7 @@ export function GraficaCategorias({ datos }) {
             data: datos.map((d) => d.total),
             borderRadius: 8,
             barThickness: 28,
-            borderColor: colorToken('magenta'),
+            borderColor: colorToken('violeta'),
             backgroundColor: (contexto) => degradado(colores[contexto.dataIndex])(contexto),
           },
         ],
@@ -49,7 +49,7 @@ export function GraficaTendencia({ datos }) {
 
   return (
     <Line
-      plugins={[brilloNeon]}
+      plugins={[brilloTornasol]}
       aria-label="Tendencia de ingresos y gastos"
       data={{
         labels: datos.map((d) => d.mes),

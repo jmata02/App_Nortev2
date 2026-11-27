@@ -34,6 +34,99 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-27 · Jurgen (con Claude) · Web: tema "Norte tornasol" · `feature/tema-tornasol`
+
+**Pedido:** cambiar los colores de la app porque otro grupo presentó una muy parecida con el
+tema oscuro neón. Mantener el estilo de ciudad costera, pero "al revés": que predomine el
+blanco, con los colores tornasol (celeste, azul, morado) y el rosado de un control de consola
+como referencia, y la palmera del logo en blanco.
+
+**Hecho:**
+- `estilos/tokens.css`: paleta nueva clara. Blanco y lavanda de base, tinta índigo para el
+  texto, tornasol (celeste → azul → índigo → violeta → morado) y rosa de acento; significados
+  más oscuros para leerse sobre blanco (turquesa ingreso, coral gasto, ámbar pendiente).
+  Nuevos `--degradado-tornasol`, `--degradado-atardecer`, `--sombra` y `--sombra-suave`.
+  Desaparecen `--color-magenta` y `--color-cian`.
+- `global.css`, `Layout.css`, `Acceso.css` y `Dashboard.css`: todas las transparencias pasan
+  de `rgba()` a `color-mix()` con tokens. Ya no queda ningún color escrito a mano en la web
+  (la excepción de `rgba()` que había en `tokens.css` deja de hacer falta).
+- Paneles de vidrio blanco con borde tornasol al pasar el mouse; botones, filtros activos,
+  menú activo, barras de metas y anillos con el degradado tornasol; tarjeta del saldo tornasol
+  con texto blanco (la única tarjeta de color, como el centro del control).
+- Pantalla de acceso: escena tornasol animada con un sol de franjas blanco → celeste → rosa →
+  violeta y cuadrícula blanca; tarjeta blanca.
+- Logo: palmera blanca sobre una insignia tornasol (`Logo.jsx`), también en el favicon.
+- Chart.js: paleta tornasol, tooltips claros con texto oscuro y brillo más suave.
+- Renombrados `FondoNeon` → `FondoTornasol` y `brilloNeon` → `brilloTornasol`.
+
+**Paradigma evidenciado:** ninguno (diseño visual).
+
+**Decisiones:** se toman los colores y la palmera (motivo genérico); no se usa el logo ni nada
+de la marca del videojuego. Tema claro único (`color-scheme: light`).
+
+**Desvíos del documento:** ninguno. Segundo cambio de diseño respecto al prototipo del Avance 1
+(mencionarlo en el Avance 2 junto con el anterior).
+
+**Problemas encontrados:** el atributo `stroke` de un SVG no acepta `var(--...)`: la palmera
+toma el color por `style`. La rejilla de Chart.js usa la tinta con transparencia en hexadecimal
+porque el canvas no entiende `color-mix()`.
+
+**Verificación:** lint y build de la web limpios (Docker). En el navegador: acceso, Dashboard con
+datos reales, Presupuestos y Metas se ven con el tema nuevo y sin errores en la consola.
+
+**Ajuste (mismo día): logo y acceso con atardecer rosado.** Jurgen pidió un logo con los
+rosados y el degradado de una portada que le gustó (solo como referencia de color y estilo;
+no se usa nada de su arte ni de su nombre).
+- `tokens.css`: nuevos `--color-rosa-fuerte`, `--color-rosa-chicle`, `--color-rosa-claro`,
+  `--color-lavanda`, `--color-pervinca` y `--color-ciruela`. `--degradado-atardecer` pasa a
+  rosa fuerte → rosa → lavanda → pervinca (el pervinca enlaza con el tornasol) y se agrega
+  `--degradado-sol`.
+- Logo estilo sticker: insignia con el atardecer rosado, contorno y sombra ciruela, palmera
+  blanca, "NORTE" en Unbounded 900 rosa claro con contorno ciruela (`paint-order`) y
+  "finanzas" en turquesa inclinado. Se carga el peso 900 de Unbounded en `index.html`.
+- Pantalla de acceso: la escena usa el atardecer rosado, el sol va de blanco a rosa claro y
+  celeste, y "bajo control" tiene el mismo estilo del logo. Favicon con la insignia rosada.
+- Dentro de la app se mantiene el tornasol (saldo, botones, menú): las dos paletas conviven.
+
+**Ajuste (mismo día): armonía en toda la app.** Jurgen sintió que los botones azules no
+combinaban con el logo rosado. Decisión: tres reglas de armonía.
+1. **Un solo degradado de marca**: `--degradado-tornasol` pasa a rosa fuerte → rosa chicle →
+   violeta → índigo → azul (empieza como el logo y termina como el control). Lo usan botones,
+   menú activo, filtros, pestañas, saldo, barras de metas y anillos. `--color-marca` = rosa fuerte.
+2. **Estilo sticker repetido**: contorno y sombra sólida ciruela (`--sombra-sticker`) en el botón
+   principal, los botones secundarios (blancos con contorno; se llenan con el degradado al pasar
+   el mouse), el menú activo, las pestañas, los filtros activos y la tarjeta del saldo. Al
+   presionar, el botón baja 2 px ("se hunde").
+3. **Todo acompaña**: fondo con un toque rosado (`#faf7fc`) y reflejos rosa, pervinca y lavanda;
+   tinta y sombras con tinte violeta; foco y campos en violeta y rosa; cuadrícula del fondo en
+   rosa y lavanda; gráficas y categorías en rosa chicle, violeta, pervinca, rosa fuerte y lavanda.
+   Los colores con significado no cambian (turquesa, coral, ámbar).
+
+**Ajuste: gastos en frambuesa.** El coral rojo de gastos y alertas no armonizaba con los
+rosados. Se cambió `--color-coral` por `--color-frambuesa` (`#d6336c`): un rosado intenso
+que combina con la marca, pero distinto del rosa de los botones para que siga leyéndose como
+"dinero que sale" o "atención" (además del signo "−" y la flecha hacia abajo). El turquesa de
+ingresos no cambia. Los estilos ya no nombran el color, sino su significado (`--color-alerta`).
+
+**Ajuste: sin contorno, con resplandor.** A Jurgen no le gustó el contorno grueso ciruela de los
+botones sobre el blanco. Se quitó de los botones, el menú activo, las pestañas, los filtros, la
+tarjeta del saldo y la insignia del logo, y se reemplazó por un resplandor suave del color de la
+marca (`--brillo-marca`, `--brillo-marca-fuerte` y `--brillo-marca-presionado`, rosa y violeta
+difuminados) que se pierde en el blanco. Se eliminaron `--sombra-sticker` y su variante. El
+contorno ciruela queda solo en las letras del logo ("NORTE", "finanzas") y en "bajo control".
+En el celular se ocultó la barra de desplazamiento gris del menú horizontal. Después, el
+resplandor (desplazado 10 px hacia abajo y muy opaco) dejaba una mancha debajo de los botones:
+se cambió por un halo centrado, pequeño y tenue (casi sin desplazamiento), también en la
+tarjeta del saldo y en los botones secundarios.
+
+**Problemas encontrados (ajuste):** los CSS que git reescribió al cambiar de rama tienen saltos
+de línea CRLF; los reemplazos se hicieron con un script que normaliza los saltos de línea.
+
+**Verificación:** lint y build limpios; en el navegador, acceso y Dashboard con la paleta
+unificada.
+
+**Pendiente:** PR hacia `dev`. Avisar al grupo del cambio de colores (sus páginas lo heredan solo).
+
 ### 2026-11-26 · Jurgen (con Claude) · Agente verificador de integración · `chore/agente-verificador`
 
 **Pedido:** un agente que revise absolutamente todo lo que entra a `main` y a `dev` para no

@@ -1,4 +1,5 @@
-/* Pantalla de acceso: escena de atardecer a la izquierda y tarjeta de vidrio a la derecha. */
+/* Pantalla de acceso: escena con el atardecer rosado del logo a la izquierda y tarjeta blanca
+   a la derecha. */
 
 .acceso {
   position: relative;
@@ -16,6 +17,16 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 3rem 2.5rem;
+  color: var(--color-sobre-tornasol);
+  background: var(--degradado-atardecer);
+  background-size: 100% 160%;
+  animation: atardecer-escena 14s ease-in-out infinite alternate;
+}
+
+@keyframes atardecer-escena {
+  to {
+    background-position: 0 100%;
+  }
 }
 
 /* El sol ocupa su propio lugar en la columna, así nunca se encima con el título. */
@@ -30,10 +41,10 @@
   max-width: 100%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: linear-gradient(180deg, var(--color-ambar) 0%, var(--color-coral) 40%, var(--color-magenta) 75%, var(--color-violeta) 100%);
+  background: var(--degradado-sol);
   -webkit-mask-image: var(--franjas);
   mask-image: var(--franjas);
-  box-shadow: 0 0 120px 20px rgba(255, 46, 136, 0.35);
+  filter: drop-shadow(0 0 40px color-mix(in srgb, var(--color-sobre-tornasol) 55%, transparent));
 }
 
 .horizonte {
@@ -44,6 +55,9 @@
   height: 34%;
   perspective: 300px;
   overflow: hidden;
+  /* La cuadrícula se desvanece hacia el horizonte */
+  -webkit-mask-image: linear-gradient(transparent 0%, #000 45%);
+  mask-image: linear-gradient(transparent 0%, #000 45%);
 }
 
 .horizonte::before {
@@ -53,17 +67,10 @@
   transform: rotateX(62deg);
   transform-origin: top;
   background-image:
-    linear-gradient(rgba(255, 46, 136, 0.55) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(139, 92, 246, 0.5) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-sobre-tornasol) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-sobre-tornasol) 45%, transparent) 1px, transparent 1px);
   background-size: 48px 48px;
   animation: avanzar 2.6s linear infinite;
-}
-
-.horizonte::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(var(--color-fondo) 0%, transparent 35%);
 }
 
 @keyframes avanzar {
@@ -76,7 +83,7 @@
   position: relative;
   z-index: 1;
   max-width: 26rem;
-  text-shadow: 0 2px 18px rgba(10, 6, 18, 0.9);
+  text-shadow: 0 2px 18px color-mix(in srgb, var(--color-morado) 45%, transparent);
 }
 
 .lema h1 {
@@ -88,15 +95,16 @@
   text-wrap: balance;
 }
 
+/* Resaltado con el mismo estilo sticker del logo: rosa claro con contorno ciruela */
 .lema h1 span {
-  background: linear-gradient(90deg, var(--color-ambar), var(--color-coral) 35%, var(--color-magenta) 70%, var(--color-violeta));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-rosa-claro);
+  -webkit-text-stroke: 6px var(--color-ciruela);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 0 var(--color-ciruela);
 }
 
 .lema p {
-  color: var(--color-texto-suave);
+  color: color-mix(in srgb, var(--color-sobre-tornasol) 85%, transparent);
   max-width: 30ch;
 }
 
@@ -113,7 +121,7 @@
   max-width: 400px;
   padding: 2.2rem;
   border-radius: 20px;
-  background: rgba(20, 11, 36, 0.72);
+  background: var(--color-superficie);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--color-borde);
@@ -122,15 +130,15 @@
   animation: entrar 0.7s var(--curva-suave) both;
 }
 
-/* Borde con degradado magenta → cian */
+/* Borde tornasol que se desvanece en el centro */
 .tarjeta-acceso::before {
   content: '';
   position: absolute;
   inset: -1px;
   border-radius: 21px;
-  padding: 1px;
+  padding: 1.5px;
   pointer-events: none;
-  background: linear-gradient(140deg, rgba(255, 46, 136, 0.7), transparent 35%, transparent 65%, rgba(34, 227, 208, 0.6));
+  background: linear-gradient(140deg, var(--color-rosa-chicle), transparent 35%, transparent 65%, var(--color-pervinca));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -164,9 +172,9 @@
 }
 
 .pestanas a[aria-current='page'] {
-  background: linear-gradient(135deg, var(--color-magenta), var(--color-violeta));
-  color: #fff;
-  box-shadow: 0 6px 20px -6px var(--color-magenta);
+  background: var(--degradado-tornasol);
+  color: var(--color-sobre-tornasol);
+  box-shadow: var(--brillo-marca);
 }
 
 @media (max-width: 820px) {
@@ -190,4 +198,14 @@
   .tarjeta-acceso {
     padding: 1.6rem;
   }
+}
+
+/* En la escena el logo va más grande, como portada. */
+.escena .logo__insignia {
+  width: 48px;
+  height: 48px;
+}
+
+.escena .logo__nombre {
+  font-size: 1.8rem;
 }
