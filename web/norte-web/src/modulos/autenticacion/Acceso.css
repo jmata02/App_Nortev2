@@ -18,15 +18,17 @@
   justify-content: space-between;
   padding: 3rem 2.5rem;
   color: var(--color-sobre-tornasol);
-  background: var(--degradado-atardecer);
-  background-size: 100% 160%;
-  animation: atardecer-escena 14s ease-in-out infinite alternate;
-}
-
-@keyframes atardecer-escena {
-  to {
-    background-position: 0 100%;
-  }
+  /* Atardecer invertido: cielo lavanda arriba y el horizonte rosa fuerte abajo, donde va el
+     lema. Así el texto blanco siempre queda sobre el tono más oscuro (≥ 4.5:1). Sin
+     animación de fondo para que el texto nunca quede sobre un tono claro. */
+  background: linear-gradient(
+    0deg,
+    var(--color-rosa-fuerte) 0%,
+    var(--color-rosa-fuerte) 22%,
+    var(--color-rosa-chicle) 48%,
+    var(--color-lavanda) 78%,
+    var(--color-pervinca) 100%
+  );
 }
 
 /* El sol ocupa su propio lugar en la columna, así nunca se encima con el título. */
@@ -104,7 +106,7 @@
 }
 
 .lema p {
-  color: color-mix(in srgb, var(--color-sobre-tornasol) 85%, transparent);
+  color: var(--color-sobre-tornasol);
   max-width: 30ch;
 }
 

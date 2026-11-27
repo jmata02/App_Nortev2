@@ -31,7 +31,8 @@ export default function Layout() {
         <Logo />
         <nav className="menu__navegacion" aria-label="Secciones">
           {SECCIONES.map(({ ruta, nombre, icono }) => (
-            <NavLink key={ruta} to={ruta} className="enlace">
+            // aria-label: en el celular el texto se oculta y solo queda el ícono.
+            <NavLink key={ruta} to={ruta} className="enlace" aria-label={nombre} title={nombre}>
               <Icono nombre={icono} />
               <span>{nombre}</span>
             </NavLink>

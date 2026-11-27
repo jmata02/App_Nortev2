@@ -91,13 +91,14 @@
 
 .saldo small {
   display: block;
-  color: color-mix(in srgb, var(--color-sobre-tornasol) 85%, transparent);
+  color: var(--color-sobre-tornasol);
   font-weight: 600;
 }
 
-/* Sobre el tornasol, la pastilla de variación es de vidrio blanco */
+/* Sobre el tornasol, la pastilla de variación es un vidrio oscuro: oscurece el fondo en vez
+   de aclararlo, así el texto blanco se sigue leyendo. */
 .saldo .chip {
-  background: color-mix(in srgb, var(--color-sobre-tornasol) 20%, transparent);
+  background: color-mix(in srgb, var(--color-ciruela) 28%, transparent);
   color: var(--color-sobre-tornasol);
   border: 1px solid color-mix(in srgb, var(--color-sobre-tornasol) 35%, transparent);
 }

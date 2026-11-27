@@ -3,7 +3,7 @@ import { useId } from 'react'
 /**
  * Mini gráfica de tendencia (sparkline) en SVG: relleno degradado y una línea que aparece
  * de izquierda a derecha.
- * `color` es un color CSS, normalmente un token: 'var(--color-cian)'.
+ * `color` es un color CSS, normalmente un token: 'var(--color-ingreso)'.
  */
 export default function MiniGrafica({ serie, color, alto = 34, retraso = 0.2, etiqueta }) {
   const idDegradado = useId()
