@@ -1,6 +1,6 @@
 /**
  * Piezas pequeñas de estado: Chip (pastilla de color) y BarraProgreso.
- * `estado` es uno de: 'ok' (cian), 'pendiente' (ámbar), 'alerta' (coral), 'meta' (violeta).
+ * `estado` es uno de: 'ok' (turquesa), 'pendiente' (ámbar), 'alerta' (frambuesa), 'meta' (degradado de marca).
  */
 
 export function Chip({ estado = 'ok', children }) {

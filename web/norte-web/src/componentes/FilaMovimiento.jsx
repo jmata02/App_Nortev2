@@ -1,12 +1,12 @@
 import { formatearColones } from '../utilidades/formato.js'
 
 // Token de color por categoría (solo presentación). Una categoría que no esté aquí toma el
-// color de su tipo: cian si es ingreso, coral si es gasto.
+// color de su tipo: turquesa si es ingreso, frambuesa si es gasto.
 const TOKEN_CATEGORIA = {
-  Alimentación: 'coral',
-  Transporte: 'ambar',
+  Alimentación: 'rosa-chicle',
+  Transporte: 'pervinca',
   Servicios: 'violeta',
-  Entretenimiento: 'magenta',
+  Entretenimiento: 'rosa-fuerte',
 }
 
 /** Una fila de movimiento: ícono de categoría, descripción, fecha y monto con su signo. */

@@ -13,34 +13,38 @@ import { formatearColones, formatearColonesCorto, prefiereMenosMovimiento } from
 
 /**
  * Lee un color de tokens.css. Chart.js dibuja en un canvas y no entiende var(--...),
- * así que se le pasa el valor real del token (por ejemplo "#ff2e88").
+ * así que se le pasa el valor real del token (por ejemplo "#4b3ce0"). Solo sirve para tokens
+ * que son un color hexadecimal, no para los que usan color-mix().
  */
 export const colorToken = (nombre) =>
   getComputedStyle(document.documentElement).getPropertyValue(`--color-${nombre}`).trim()
 
-/** Orden de colores para series y categorías de las gráficas (nombres de token). */
-export const PALETA_GRAFICAS = ['coral', 'violeta', 'magenta', 'ambar', 'cian']
+/** Orden de colores para series y categorías de las gráficas (nombres de token, tornasol). */
+export const PALETA_GRAFICAS = ['rosa-chicle', 'violeta', 'pervinca', 'rosa-fuerte', 'lavanda']
 
-// Configuración común de Chart.js para el tema neón. Se importa una vez desde main.jsx,
+// Configuración común de Chart.js para el tema tornasol. Se importa una vez desde main.jsx,
 // después de tokens.css.
 Chart.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Filler, Tooltip, Legend)
 Chart.defaults.color = colorToken('texto-suave')
 Chart.defaults.font.family = getComputedStyle(document.documentElement).getPropertyValue('--fuente-texto').trim()
 Chart.defaults.animation.duration = prefiereMenosMovimiento() ? 0 : 1100
-Chart.defaults.plugins.tooltip.backgroundColor = colorToken('fondo-2')
-Chart.defaults.plugins.tooltip.borderColor = colorToken('magenta')
+Chart.defaults.plugins.tooltip.backgroundColor = colorToken('superficie')
+Chart.defaults.plugins.tooltip.titleColor = colorToken('tinta')
+Chart.defaults.plugins.tooltip.bodyColor = colorToken('texto-suave')
+Chart.defaults.plugins.tooltip.borderColor = colorToken('violeta')
 Chart.defaults.plugins.tooltip.borderWidth = 1
 Chart.defaults.plugins.tooltip.padding = 10
 
-/** Brillo neón: dibuja cada serie con una sombra de su propio color. */
-export const brilloNeon = {
-  id: 'brilloNeon',
+/** Brillo tornasol: dibuja cada serie con una sombra suave de su propio color. */
+export const brilloTornasol = {
+  id: 'brilloTornasol',
   beforeDatasetDraw(grafica, { meta }) {
     const contexto = grafica.ctx
     const serie = grafica.data.datasets[meta.index]
-    const color = typeof serie.borderColor === 'string' ? serie.borderColor : colorToken('magenta')
+    const color = typeof serie.borderColor === 'string' ? serie.borderColor : colorToken('violeta')
     contexto.save()
-    contexto.shadowColor = `${color}AA`
+    // Sobre fondo blanco el brillo es más suave (66 = 40 % de opacidad en hexadecimal).
+    contexto.shadowColor = `${color}66`
     contexto.shadowBlur = meta.type === 'line' ? 16 : 12
     contexto.shadowOffsetY = meta.type === 'line' ? 6 : 0
   },
@@ -65,7 +69,7 @@ export const degradado = (color, { desde = 'abajo', opacidad = '33' } = {}) => (
 export const ejesColones = () => ({
   y: {
     beginAtZero: true,
-    grid: { color: colorToken('borde') },
+    grid: { color: `${colorToken('tinta')}14` }, // tinta al 8 % (14 en hexadecimal)
     border: { display: false },
     ticks: {
       font: { family: getComputedStyle(document.documentElement).getPropertyValue('--fuente-numeros').trim(), size: 10 },

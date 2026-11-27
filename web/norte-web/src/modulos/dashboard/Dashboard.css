@@ -7,7 +7,8 @@
   margin-bottom: 1.2rem;
 }
 
-/* ---------- Tarjeta del saldo: borde de luz que gira y un sol que late ---------- */
+/* ---------- Tarjeta del saldo: tornasol como el control, borde de luz que gira y un sol que
+   late. Es la única tarjeta de color: es lo primero que se lee. ---------- */
 @property --giro {
   syntax: '<angle>';
   inherits: false;
@@ -20,13 +21,20 @@
   overflow: hidden;
   padding: 1.8rem;
   border-radius: var(--radio-grande);
-  background:
-    linear-gradient(135deg, rgba(255, 46, 136, 0.26), rgba(139, 92, 246, 0.18) 55%, rgba(34, 227, 208, 0.07)),
-    rgba(20, 11, 36, 0.6);
+  color: var(--color-sobre-tornasol);
+  background: var(--degradado-tornasol);
+  background-size: 160% 160%;
+  animation: tornasol-saldo 10s ease-in-out infinite alternate;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 30px 70px -25px rgba(255, 46, 136, 0.45),
-    0 10px 30px -15px rgba(0, 0, 0, 0.8);
+    inset 0 1px 0 color-mix(in srgb, var(--color-sobre-tornasol) 40%, transparent),
+    0 14px 30px -18px color-mix(in srgb, var(--color-violeta) 40%, transparent),
+    0 0 30px -10px color-mix(in srgb, var(--color-rosa-fuerte) 25%, transparent);
+}
+
+@keyframes tornasol-saldo {
+  to {
+    background-position: 100% 100%;
+  }
 }
 
 .saldo::before {
@@ -36,7 +44,14 @@
   border-radius: var(--radio-grande);
   padding: 1.5px;
   pointer-events: none;
-  background: conic-gradient(from var(--giro), transparent 0 60%, var(--color-ambar) 70%, var(--color-magenta) 80%, var(--color-violeta) 90%, transparent);
+  background: conic-gradient(
+    from var(--giro),
+    transparent 0 60%,
+    var(--color-sobre-tornasol) 72%,
+    var(--color-rosa) 82%,
+    var(--color-lavanda) 90%,
+    transparent
+  );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -58,7 +73,12 @@
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 181, 71, 0.45), rgba(255, 46, 136, 0.15) 45%, transparent 68%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-sobre-tornasol) 45%, transparent),
+    color-mix(in srgb, var(--color-rosa) 25%, transparent) 45%,
+    transparent 68%
+  );
   animation: latir 5s ease-in-out infinite alternate;
 }
 
@@ -71,8 +91,15 @@
 
 .saldo small {
   display: block;
-  color: var(--color-texto-suave);
+  color: color-mix(in srgb, var(--color-sobre-tornasol) 85%, transparent);
   font-weight: 600;
+}
+
+/* Sobre el tornasol, la pastilla de variación es de vidrio blanco */
+.saldo .chip {
+  background: color-mix(in srgb, var(--color-sobre-tornasol) 20%, transparent);
+  color: var(--color-sobre-tornasol);
+  border: 1px solid color-mix(in srgb, var(--color-sobre-tornasol) 35%, transparent);
 }
 
 .saldo__cifra {
@@ -82,7 +109,7 @@
   font-size: clamp(2.2rem, 5vw, 3.6rem);
   line-height: 1.1;
   margin: 0.4rem 0 0.6rem;
-  text-shadow: 0 0 30px rgba(255, 46, 136, 0.45);
+  text-shadow: 0 4px 24px color-mix(in srgb, var(--color-morado) 45%, transparent);
 }
 
 .saldo .chispa {
@@ -115,7 +142,7 @@
   display: grid;
   place-items: center;
   margin-bottom: 0.7rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-superficie) 60%, transparent);
 }
 
 .indicador__icono .icono {
@@ -169,15 +196,15 @@
   padding: 0.9rem 1rem;
   border-radius: 12px;
   margin-bottom: 1.2rem;
-  background: linear-gradient(90deg, rgba(255, 107, 74, 0.16), rgba(255, 46, 136, 0.06));
-  border: 1px solid rgba(255, 107, 74, 0.4);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-alerta) 12%, var(--color-superficie)), color-mix(in srgb, var(--color-rosa) 6%, var(--color-superficie)));
+  border: 1px solid color-mix(in srgb, var(--color-alerta) 35%, transparent);
 }
 
 .alerta__pulso {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--color-coral);
+  background: var(--color-alerta);
   margin-top: 0.35rem;
   flex-shrink: 0;
   animation: pulso 1.8s infinite;
@@ -185,13 +212,13 @@
 
 @keyframes pulso {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 107, 74, 0.7);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-alerta) 70%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(255, 107, 74, 0);
+    box-shadow: 0 0 0 12px transparent;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 107, 74, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
