@@ -2,6 +2,18 @@
 
 Registro de cambios por módulo. Agreguen su entrada arriba al cerrar cada Pull Request.
 
+## [2026-11-27] — PR #6: Contraste y accesibilidad del tema (Jurgen)
+
+### Modificado
+- Degradado de marca con todas sus paradas ≥ 5:1 con texto blanco; variantes de texto
+  `--color-ingreso-texto`, `--color-alerta-texto` y `--color-pendiente-texto`; gris tenue a
+  4.9:1; `--color-borde-campo` para que los campos se vean.
+- Pantalla de acceso con el atardecer invertido (el lema queda sobre el rosa fuerte).
+- Menú del celular con `aria-label`; gráficas con `role="img"`.
+- Datos de ejemplo de Deudas con el porcentaje pagado correcto.
+- Agente `verificador-integracion`: revisa colores en CSS, tokens borrados y contraste.
+- Entradas de los PR #3, #4 y #5 en este CHANGELOG.
+
 ## [2026-11-27] — PR #5: Tema visual "Norte tornasol" (Jurgen)
 
 ### Modificado

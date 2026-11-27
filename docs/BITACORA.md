@@ -34,6 +34,50 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-27 · Jurgen (con Claude) · Pruebas de prioridad alta · `chore/pruebas-prioridad-alta`
+
+**Pedido:** agregar las pruebas de prioridad alta que sugirió el agente `pruebas` en la revisión
+de `dev`.
+
+**Hecho (31 pruebas nuevas, 89 en total):**
+- `Fakes/RelojFijo`: acepta un instante con zona horaria (por ejemplo -06:00, Costa Rica).
+- `Fakes/UsuarioDASimultaneoFake`: obliga a que dos registros pregunten "¿existe el correo?"
+  antes de guardar (la peor carrera) y se comporta como el índice único (el segundo choca).
+- `Fakes/ReporteDAParaleloFake`: ninguna consulta responde hasta que todas se pidieron; si el
+  Flujo las pidiera una por una, la prueba falla por tiempo en vez de colgarse.
+- `Flujo/ReporteFlujoCasosLimitePruebas`: la noche del 30/11 en Costa Rica ya es diciembre en
+  UTC; enero se compara con diciembre del año anterior; filtrado por usuario en gasto por
+  categoría y tendencia; tendencia de 1 y 12 meses; mes sin año da 400; el resumen pide sus 3
+  consultas a la vez y el gasto por categoría sus 2.
+- `Flujo/AutenticacionConcurrenciaPruebas`: dos registros simultáneos con el mismo correo → se
+  guarda uno y el otro termina en `ConflictoException` (riesgo 6).
+- `Reglas/ReglaResumenFinancieroDineroPruebas`: redondeo de puntos medios positivos y negativos
+  (AwayFromZero, con `decimal` exacto), céntimos sin error (0.10 + 0.20 = 0.30), primer y último
+  día del mes, mismo mes de otro año, tres porcentajes de 33.33 que suman 99.99 (documentado) y
+  que la lista de categorías no cambia.
+- `ReglaMontoPositivoPruebas`: límites de céntimos (0.01 sí, 0.001 no, -0.01 no, 10.500 sí).
+- `UsuarioPruebas`: fecha sin zona horaria se rechaza, nombre de 2 letras es el mínimo, Ids
+  distintos. `PeriodoMensualPruebas`: límites 2000/1 y 2100/12, último día de febrero no
+  bisiesto, de un mes de 30 y de diciembre, mismo mes de otro año.
+- `CHANGELOG.md`: entrada del PR #6.
+
+**Paradigma evidenciado:** concurrente (de apoyo): las pruebas demuestran que `ReporteFlujo`
+pide las consultas en paralelo y que dos registros simultáneos no duplican el usuario.
+Funcional: las reglas de dinero se prueban con datos en memoria sin modificar la entrada.
+
+**Decisiones:** las pruebas de concurrencia usan `TaskCompletionSource` con límite de tiempo
+(fallan en 5 s en lugar de colgarse). Los valores de dinero en `[Theory]` van como `decimal`
+con `TheoryData`, no como `double`.
+
+**Desvíos del documento:** ninguno. No se tocó código de producción.
+
+**Problemas encontrados:** ninguno. La suite se corrió tres veces seguidas (89/89 las tres) para
+descartar pruebas inestables.
+
+**Pendiente:** pruebas de prioridad media y baja de la lista (Categorías, nombres de algunas
+pruebas viejas). Hallazgo de diseño anotado: `PeriodoMensual.Retroceder` puede salir del rango
+2000–2100 sin validar. Borrar las ramas integradas.
+
 ### 2026-11-27 · Jurgen (con Claude) · Revisión de `dev`: contraste y accesibilidad · `fix/contraste-accesibilidad`
 
 **Pedido:** correr los agentes de pruebas y revisión sobre `dev` (después del PR #5) y arreglar
