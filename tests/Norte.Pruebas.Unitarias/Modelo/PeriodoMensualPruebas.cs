@@ -37,4 +37,30 @@ public class PeriodoMensualPruebas
     {
         Assert.Throws<ReglaNegocioException>(() => PeriodoMensual.Crear(anio, mes));
     }
+
+    [Theory]
+    [InlineData(2000, 1)]
+    [InlineData(2100, 12)]
+    public void Crear_LimitesValidosDeAnioYMes_CreaElPeriodo(int anio, int mes)
+    {
+        Assert.Equal((anio, mes), (PeriodoMensual.Crear(anio, mes).Anio, PeriodoMensual.Crear(anio, mes).Mes));
+    }
+
+    [Theory]
+    [InlineData(2026, 2, 28)]   // febrero de un año que no es bisiesto
+    [InlineData(2026, 4, 30)]
+    [InlineData(2026, 12, 31)]
+    public void Fin_SegunElMes_EsSuUltimoDia(int anio, int mes, int ultimoDia)
+    {
+        Assert.Equal(new DateOnly(anio, mes, ultimoDia), PeriodoMensual.Crear(anio, mes).Fin);
+    }
+
+    [Fact]
+    public void Contiene_MismoMesDeOtroAnio_DevuelveFalse()
+    {
+        var noviembre = PeriodoMensual.Crear(2026, 11);
+
+        Assert.True(noviembre.Contiene(new DateOnly(2026, 11, 1)));
+        Assert.False(noviembre.Contiene(new DateOnly(2025, 11, 1)));
+    }
 }

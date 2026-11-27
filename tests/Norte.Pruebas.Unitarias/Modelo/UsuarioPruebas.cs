@@ -32,4 +32,28 @@ public class UsuarioPruebas
     {
         Assert.Throws<ReglaNegocioException>(() => Usuario.Crear("Ana", "ana@norte.com", "hash", DateTime.Now));
     }
+
+    [Fact]
+    public void Crear_FechaSinZonaHoraria_LanzaReglaNegocio()
+    {
+        // Kind = Unspecified: es lo que llega de new DateTime(...) o de un JSON sin zona horaria.
+        var fechaSinZona = new DateTime(2026, 11, 27, 10, 0, 0);
+
+        Assert.Throws<ReglaNegocioException>(() => Usuario.Crear("Ana", "ana@norte.com", "hash", fechaSinZona));
+    }
+
+    [Fact]
+    public void Crear_NombreDeDosLetras_EsElMinimoValido()
+    {
+        Assert.Equal("Al", Usuario.Crear("Al", "al@norte.com", "hash", DateTime.UtcNow).Nombre);
+    }
+
+    [Fact]
+    public void Crear_DosUsuarios_TienenIdsDistintos()
+    {
+        var primero = Usuario.Crear("Ana", "ana@norte.com", "hash", DateTime.UtcNow);
+        var segundo = Usuario.Crear("Luis", "luis@norte.com", "hash", DateTime.UtcNow);
+
+        Assert.NotEqual(primero.Id, segundo.Id);
+    }
 }
