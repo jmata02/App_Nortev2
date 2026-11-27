@@ -82,8 +82,14 @@ Revisa solo los archivos del rango, con `git diff` y `Grep`:
   consultas de datos del usuario filtradas por `UsuarioId`; controllers de datos del usuario con
   `[Authorize]`, sin lógica ni `try/catch`; dependencias registradas en `Modulo<X>.cs`;
   `new` solo de entidades y DTOs.
-- Web: todo HTTP por `api/clienteHttp.js`; la web no calcula dinero; colores solo de
-  `estilos/tokens.css` (en JS/JSX, nada de `#xxxxxx` ni `rgba(`); sin `console.log` olvidados.
+- Web: todo HTTP por `api/clienteHttp.js`; la web no calcula dinero; sin `console.log`
+  olvidados. Colores solo de `estilos/tokens.css`: en JS, JSX y en los `*.css` distintos de
+  `tokens.css`, nada de `#xxxxxx`, `rgba(` ni `hsl(` (se acepta `#000` dentro de `mask-image`,
+  porque solo usa la transparencia). Las transparencias se hacen con `color-mix()`.
+- Tokens borrados: si el rango elimina una variable de `tokens.css`, busca que ningún archivo
+  la siga usando (`var(--nombre)`); si alguien la usa, es bloqueante.
+- Contraste: el texto debe tener al menos 4.5:1 con su fondo (3:1 si es grande o negrita
+  grande). Usa las variantes `--color-*-texto` para texto con significado.
 - Pruebas: cada Regla y Flujo nuevo tiene pruebas en `tests/Norte.Pruebas.Unitarias`.
 - Paradigmas: si el cambio dice evidenciar uno, que haya un archivo y método concreto.
 

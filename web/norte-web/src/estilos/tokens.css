@@ -22,12 +22,14 @@
   --color-superficie: #ffffff;
   --color-vidrio: color-mix(in srgb, var(--color-violeta) 6%, transparent);
   --color-borde: color-mix(in srgb, var(--color-tinta) 10%, transparent);
+  /* Borde de los campos de formulario: debe verse (3:1, WCAG 1.4.11). */
+  --color-borde-campo: color-mix(in srgb, var(--color-tinta) 52%, var(--color-superficie));
 
   /* Texto */
   --color-tinta: #24183f;
   --color-texto: var(--color-tinta);
   --color-texto-suave: #625879;
-  --color-texto-tenue: #9a90b0;
+  --color-texto-tenue: #766c8e; /* 4.8:1 sobre blanco (antes 3.0:1) */
   --color-sobre-tornasol: #ffffff;
 
   /* Tornasol (los colores del control) */
@@ -49,7 +51,7 @@
 
   /* Significado */
   --color-turquesa: #0e9f8f;
-  --color-frambuesa: #d6336c; /* rosado intenso: armoniza con la marca, pero se lee como alerta */
+  --color-frambuesa: #c42b63; /* rosado intenso: armoniza con la marca, pero se lee como alerta */
   --color-ambar: #d98a0b;
   --color-marca: var(--color-rosa-fuerte);
   --color-ingreso: var(--color-turquesa);
@@ -58,15 +60,22 @@
   --color-alerta: var(--color-frambuesa);
   --color-pendiente: var(--color-ambar);
 
+  /* Versiones para TEXTO (≥ 4.5:1 sobre el fondo claro). Los colores de arriba se quedan
+     para barras, íconos y rellenos, donde basta 3:1. */
+  --color-ingreso-texto: #0b7d71;
+  --color-alerta-texto: var(--color-frambuesa);
+  --color-pendiente-texto: #8a5a00;
+
   /* Degradados */
-  /* Degradado de marca: rosa (logo) → violeta → azul (control). */
+  /* Degradado de marca: rosa (logo) → violeta → azul (control). Todas las paradas dan
+     al menos 4.5:1 con texto blanco (por eso no usa el rosa chicle ni el azul puro). */
   --degradado-tornasol: linear-gradient(
     115deg,
     var(--color-rosa-fuerte) 0%,
-    var(--color-rosa-chicle) 22%,
-    var(--color-violeta) 55%,
-    var(--color-indigo) 80%,
-    var(--color-azul) 100%
+    color-mix(in srgb, var(--color-rosa-fuerte) 55%, var(--color-violeta)) 30%,
+    var(--color-violeta) 58%,
+    var(--color-indigo) 82%,
+    color-mix(in srgb, var(--color-azul) 70%, var(--color-indigo)) 100%
   );
   /* Fondo del logo y de la escena de acceso */
   --degradado-atardecer: linear-gradient(
@@ -84,7 +93,7 @@
     var(--color-celeste) 100%
   );
 
-  /* Sombras (tinte violeta, nunca negro puro) y la sombra sólida del estilo sticker */
+  /* Sombras (tinte violeta, nunca negro puro) */
   --sombra: 0 24px 50px -24px color-mix(in srgb, var(--color-violeta) 38%, transparent);
   --sombra-suave: 0 10px 24px -14px color-mix(in srgb, var(--color-tinta) 22%, transparent);
   /* Halo centrado y tenue alrededor del botón (casi sin desplazamiento hacia abajo, para que

@@ -34,6 +34,60 @@ se hizo, quién lo hizo, qué decisiones se tomaron y qué falta. También alime
 
 <!-- ENTRADAS -->
 
+### 2026-11-27 · Jurgen (con Claude) · Revisión de `dev`: contraste y accesibilidad · `fix/contraste-accesibilidad`
+
+**Pedido:** correr los agentes de pruebas y revisión sobre `dev` (después del PR #5) y arreglar
+los hallazgos importantes.
+
+**Resultado de los agentes:** `verificador-integracion` → LISTO CON OBSERVACIONES (compila sin
+advertencias, 58/58 pruebas, sin migraciones pendientes, lint y build limpios, sin secretos;
+las 8 ramas de trabajo están integradas y se pueden borrar). `revisor` → sin bloqueantes; los
+importantes eran de contraste y accesibilidad del tema claro y el CHANGELOG atrasado. `pruebas`
+→ 58/58 y una lista de 22 pruebas que conviene agregar (pendiente).
+
+**Hecho:**
+- `tokens.css`: el degradado de marca ya no usa el rosa chicle ni el azul puro; todas sus
+  paradas dan 5.0–7.0:1 con texto blanco (antes 3.2:1 en la zona rosa). Nuevas variantes para
+  texto: `--color-ingreso-texto` (5.0:1), `--color-alerta-texto` (frambuesa más oscuro, 5.4:1) y
+  `--color-pendiente-texto` (5.9:1); los colores base se quedan para barras e íconos.
+  `--color-texto-tenue` pasa de 3.0:1 a 4.9:1. Nuevo `--color-borde-campo` para que los campos
+  de formulario se vean (≥ 3:1).
+- `global.css`: `.ingreso`, `.gasto`, chips, aviso de vista previa y mensajes de error usan las
+  variantes de texto; los campos usan el borde nuevo. Se unieron las dos reglas `.boton:hover`.
+  `.accion` usa peso 700 (Manrope solo se carga hasta 700).
+- Tarjeta del saldo: el texto pequeño en blanco al 100 % y la pastilla de variación con un velo
+  oscuro (antes aclaraba el fondo).
+- Pantalla de acceso: el atardecer se invirtió (lavanda arriba, rosa fuerte abajo, como un
+  horizonte); el lema blanco queda siempre sobre el tono oscuro. Sin animación de fondo ahí.
+- Menú en el celular: cada enlace lleva `aria-label` y `title`, porque el texto se oculta.
+- Gráficas con `role="img"`; `theme-color` igual a `--color-fondo`; comentario de
+  `MiniGrafica` con un token que existe; datos de ejemplo de Deudas con el porcentaje pagado
+  correcto (39 % y 60 %, estaban invertidos).
+- `CHANGELOG.md`: entradas de los PR #3, #4 y #5 (con los tokens eliminados y su reemplazo).
+- Agente `verificador-integracion`: ahora revisa colores escritos a mano también en CSS, tokens
+  borrados que se sigan usando y el contraste del texto.
+
+**Paradigma evidenciado:** ninguno (diseño y accesibilidad).
+
+**Decisiones:** colores de significado en dos versiones (base para barras e íconos, `-texto` para
+letras). Se acepta `#000` dentro de `mask-image` (solo usa la transparencia) y las copias
+documentadas de colores en `favicon.svg` y `theme-color`.
+
+**Desvíos del documento:** ninguno.
+
+**Problemas encontrados:** ninguno nuevo. Aclaración a la entrada anterior: "no queda ningún
+color escrito a mano" vale para colores visibles; quedan `#000` en máscaras y las dos copias
+documentadas.
+
+**Verificación:** lint y build limpios; contrastes calculados con la fórmula WCAG; en el
+navegador, acceso y Dashboard legibles.
+
+**Pendiente:** las 22 pruebas sugeridas por el agente `pruebas` (prioridad alta: "hoy" en UTC,
+registros simultáneos, filtrado por usuario en los otros reportes, redondeo de negativos y
+céntimos). Pedir que otra persona revise los próximos PR (los #4 y #5 los aprobó Jurgen).
+Confirmar si el autor "Zick" de los dos primeros commits es Carlos para anotarlo. Borrar las
+ramas integradas cuando Jurgen lo decida.
+
 ### 2026-11-27 · Jurgen (con Claude) · Web: tema "Norte tornasol" · `feature/tema-tornasol`
 
 **Pedido:** cambiar los colores de la app porque otro grupo presentó una muy parecida con el

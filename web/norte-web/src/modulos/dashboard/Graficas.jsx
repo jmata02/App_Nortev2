@@ -8,6 +8,7 @@ export function GraficaCategorias({ datos }) {
   return (
     <Bar
       plugins={[brilloTornasol]}
+      role="img"
       aria-label="Gasto por categoría"
       data={{
         labels: datos.map((d) => d.categoria),
@@ -50,6 +51,7 @@ export function GraficaTendencia({ datos }) {
   return (
     <Line
       plugins={[brilloTornasol]}
+      role="img"
       aria-label="Tendencia de ingresos y gastos"
       data={{
         labels: datos.map((d) => d.mes),

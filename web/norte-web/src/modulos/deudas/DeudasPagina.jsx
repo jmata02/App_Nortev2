@@ -8,8 +8,8 @@ import { formatearColones } from '../../utilidades/formato.js'
 // una PROPUESTA de contrato: acordarla y ajustarla al DTO real. El estado (AlDia, Pendiente,
 // Atrasado) y el porcentaje pagado los calcula el backend; la web solo los muestra.
 const DEUDAS_EJEMPLO = [
-  { id: 1, nombre: 'Tarjeta BAC Visa', montoPendiente: 184000, montoTotal: 300000, vence: '28 nov', estado: 'Atrasado', porcentajePagado: 61 },
-  { id: 2, nombre: 'Préstamo personal BCR', montoPendiente: 65000, montoTotal: 162500, vence: '1 dic', estado: 'Pendiente', porcentajePagado: 40 },
+  { id: 1, nombre: 'Tarjeta BAC Visa', montoPendiente: 184000, montoTotal: 300000, vence: '28 nov', estado: 'Atrasado', porcentajePagado: 39 },
+  { id: 2, nombre: 'Préstamo personal BCR', montoPendiente: 65000, montoTotal: 162500, vence: '1 dic', estado: 'Pendiente', porcentajePagado: 60 },
   { id: 3, nombre: 'Alquiler del apartamento', montoPendiente: 0, montoTotal: 220000, vence: '5 dic', estado: 'AlDia', porcentajePagado: 100 },
   { id: 4, nombre: 'Gimnasio', montoPendiente: 0, montoTotal: 18500, vence: '10 dic', estado: 'AlDia', porcentajePagado: 100 },
 ]

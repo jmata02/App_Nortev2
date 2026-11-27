@@ -2,6 +2,45 @@
 
 Registro de cambios por módulo. Agreguen su entrada arriba al cerrar cada Pull Request.
 
+## [2026-11-27] — PR #5: Tema visual "Norte tornasol" (Jurgen)
+
+### Modificado
+- **Tema claro** que reemplaza al oscuro neón (se parecía al proyecto de otro grupo): predomina
+  el blanco, con un solo degradado de marca rosa → violeta → azul en botones, menú, filtros,
+  pestañas, saldo, barras de metas y anillos. Los botones flotan con un halo suave.
+- **Logo**: palmera blanca en una insignia con atardecer rosado y "NORTE" en rosa claro con
+  contorno; favicon nuevo. La pantalla de acceso usa el atardecer rosado.
+- **Gastos y alertas** en frambuesa (antes coral); los ingresos siguen en turquesa.
+- Todas las transparencias con `color-mix()` de tokens; gráficas de Chart.js en la misma paleta.
+- Renombrados `FondoNeon` → `FondoTornasol` y `brilloNeon` → `brilloTornasol`.
+
+### Tokens
+- Nuevos: `--color-rosa-fuerte`, `--color-rosa-chicle`, `--color-rosa-claro`, `--color-lavanda`,
+  `--color-pervinca`, `--color-ciruela`, `--color-frambuesa`, `--color-marca`,
+  `--degradado-tornasol`, `--degradado-atardecer`, `--degradado-sol`, `--brillo-marca` (y
+  variantes), `--sombra`, `--sombra-suave`.
+- **Eliminados** (si los usan en su rama, cámbienlos): `--color-magenta` → `--color-marca`,
+  `--color-cian` → `--color-ok`, `--color-coral` → `--color-alerta`.
+
+## [2026-11-26] — PR #4: Agente verificador de integración (Jurgen)
+
+### Agregado
+- Agente `verificador-integracion` y skill `/verificar-integracion [rama|dev|main]`: revisan
+  todo lo que entra a `dev` o `main` (historial, secretos, archivos prohibidos, conflictos,
+  bitácora, changelog, migraciones, reglas de código) y corren compilación, pruebas y lint.
+- `CONTRIBUTING.md`: verificar antes de cada merge.
+
+### Incluye también
+- El commit del PR #3, que entró a `main` por error en vez de `dev`; con este PR llegó a `dev`.
+
+## [2026-11-26] — PR #3: Coordinación (Jurgen) — integrado en `main` por error
+
+### Agregado
+- Entrada del PR #2 en este CHANGELOG.
+- README: sección "Demostración y defensa" (riesgo 10: demo local con Docker y compu de respaldo).
+- Se hizo merge en `main` en lugar de `dev`. Su contenido llegó a `dev` con el PR #4; `main`
+  solo conserva el commit del merge, sin contenido propio.
+
 ## [2026-11-26] — PR #2: Dashboard y reportes (Jurgen)
 
 ### Agregado

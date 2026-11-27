@@ -54,11 +54,11 @@ button {
 }
 
 .ingreso {
-  color: var(--color-ingreso);
+  color: var(--color-ingreso-texto);
 }
 
 .gasto {
-  color: var(--color-gasto);
+  color: var(--color-alerta-texto);
 }
 
 /* ---------- Fondo: cielo claro con reflejos tornasol que respiran + grano ---------- */
@@ -163,9 +163,6 @@ button {
 
 .boton:hover {
   background-position: 100% 0;
-}
-
-.boton:hover {
   box-shadow: var(--brillo-marca-fuerte);
 }
 
@@ -186,7 +183,7 @@ button {
   color: var(--color-marca);
   padding: 0.55rem 1rem;
   border-radius: 10px;
-  font-weight: 800;
+  font-weight: 700;
   box-shadow: 0 0 12px -4px color-mix(in srgb, var(--color-rosa-fuerte) 25%, transparent);
   transition: background 0.2s, color 0.2s, transform 0.12s, box-shadow 0.2s, border-color 0.2s;
 }
@@ -327,17 +324,17 @@ button {
 
 .chip--ok {
   background: color-mix(in srgb, var(--color-ok) 13%, transparent);
-  color: var(--color-ok);
+  color: var(--color-ingreso-texto);
 }
 
 .chip--alerta {
-  background: color-mix(in srgb, var(--color-alerta) 12%, transparent);
-  color: var(--color-alerta);
+  background: color-mix(in srgb, var(--color-alerta) 10%, transparent);
+  color: var(--color-alerta-texto);
 }
 
 .chip--pendiente {
-  background: color-mix(in srgb, var(--color-pendiente) 14%, transparent);
-  color: var(--color-pendiente);
+  background: color-mix(in srgb, var(--color-pendiente) 12%, transparent);
+  color: var(--color-pendiente-texto);
 }
 
 /* ---------- Barras de progreso que se llenan ---------- */
@@ -515,7 +512,7 @@ button {
   border-radius: 99px;
   border: 1px dashed color-mix(in srgb, var(--color-ambar) 55%, transparent);
   background: color-mix(in srgb, var(--color-ambar) 6%, transparent);
-  color: var(--color-ambar);
+  color: var(--color-pendiente-texto);
   font-size: 0.78rem;
   font-weight: 600;
 }
@@ -614,7 +611,7 @@ button {
   width: 100%;
   padding: 0.8rem 0.95rem;
   border-radius: 10px;
-  border: 1px solid var(--color-borde);
+  border: 1px solid var(--color-borde-campo);
   background: var(--color-superficie);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -638,7 +635,7 @@ button {
 
 .mensaje-error {
   font-size: 0.85rem;
-  color: var(--color-alerta);
+  color: var(--color-alerta-texto);
   min-height: 1.2em;
 }
 
